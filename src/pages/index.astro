@@ -121,13 +121,14 @@
     .nav-cta::after { display: none !important; }
     .nav-cta:hover { opacity: 0.88; transform: translateY(-1px); }
 
-    /* Hamburger */
+    /* Hamburger — show at 1100px so nav doesn't squeeze */
     .hamburger {
       display: none; flex-direction: column; justify-content: center; gap: 5px;
       cursor: pointer; background: none;
       border: 1px solid rgba(255,255,255,0.3); border-radius: 4px;
       padding: 9px 11px; width: 44px; height: 38px;
       position: relative; z-index: 200; transition: border-color 0.3s;
+      flex-shrink: 0;
     }
     nav.scrolled .hamburger { border-color: var(--card-border); }
     .hamburger:hover { border-color: var(--gold-lt); }
@@ -142,92 +143,112 @@
     .hamburger.is-open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
     /* ============================================================
-       MOBILE MENU — slide-in drawer
+       MOBILE MENU
     ============================================================ */
     .mm-backdrop {
-      position: fixed; inset: 0; z-index: 140;
-      background: rgba(20,28,60,0.55);
-      backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
-      opacity: 0; pointer-events: none; transition: opacity 0.35s;
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      z-index: 140;
+      background: rgba(10,16,40,0.65);
+      backdrop-filter: blur(3px);
+      -webkit-backdrop-filter: blur(3px);
     }
-    .mm-backdrop.open { opacity: 1; pointer-events: all; }
+    .mm-backdrop.open { display: block; }
 
     .mobile-menu {
-      position: fixed; top: 0; right: 0; bottom: 0;
-      width: min(320px, 86vw);
-      background: var(--navy);
+      position: fixed;
+      top: 0; right: 0;
+      width: 290px;
+      height: 100%;
+      background: #1c2850;
       z-index: 150;
-      display: flex; flex-direction: column;
-      box-shadow: -6px 0 48px rgba(0,0,0,0.3);
+      display: flex;
+      flex-direction: column;
+      box-shadow: -6px 0 40px rgba(0,0,0,0.4);
       transform: translateX(100%);
-      transition: transform 0.38s cubic-bezier(0.4,0,0.2,1);
-      overflow-y: auto;
+      transition: transform 0.32s ease;
     }
     .mobile-menu.open { transform: translateX(0); }
 
     .mm-header {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 20px 22px 18px;
-      border-bottom: 1px solid rgba(255,255,255,0.07); flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 20px 18px 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      background: #1c2850;
+      flex-shrink: 0;
     }
     .mm-brand {
-      font-family: 'Cinzel', serif; font-size: 12px; font-weight: 600;
-      letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold-lt);
+      font-family: 'Cinzel', serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #d4a44c;
     }
     .mm-close {
-      width: 34px; height: 34px; border-radius: 6px;
-      border: 1px solid rgba(255,255,255,0.12);
-      background: rgba(255,255,255,0.05);
-      color: rgba(255,255,255,0.65); cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      transition: all 0.25s;
+      width: 32px;
+      height: 32px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 6px;
+      color: rgba(255,255,255,0.8);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
     }
-    .mm-close:hover { background: rgba(184,132,42,0.15); border-color: rgba(184,132,42,0.4); color: var(--gold-lt); }
-    .mm-close svg { width: 15px; height: 15px; }
+    .mm-close:hover { background: rgba(212,164,76,0.2); border-color: #d4a44c; color: #d4a44c; }
+    .mm-close svg { width: 14px; height: 14px; }
 
-    .mm-nav { display: flex; flex-direction: column; flex: 1; padding: 8px 0; }
-    .mm-nav a {
-      font-family: 'Cinzel', serif; font-size: 12.5px; letter-spacing: 0.13em;
-      text-transform: uppercase; color: rgba(255,255,255,0.6);
-      text-decoration: none; padding: 15px 26px;
-      display: flex; align-items: center; justify-content: space-between;
-      border-bottom: 1px solid rgba(255,255,255,0.05);
-      opacity: 0; transform: translateX(14px);
-      transition: color 0.25s, background 0.25s, opacity 0.35s, transform 0.35s;
+    .mm-nav {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      padding-top: 100px;
     }
-    .mm-nav a::after { content: '›'; font-size: 17px; color: rgba(255,255,255,0.2); transition: color 0.25s, transform 0.25s; }
-    .mobile-menu.open .mm-nav a { opacity: 1; transform: translateX(0); }
-    .mobile-menu.open .mm-nav a:nth-child(1) { transition-delay: 0.05s; }
-    .mobile-menu.open .mm-nav a:nth-child(2) { transition-delay: 0.10s; }
-    .mobile-menu.open .mm-nav a:nth-child(3) { transition-delay: 0.15s; }
-    .mobile-menu.open .mm-nav a:nth-child(4) { transition-delay: 0.20s; }
-    .mobile-menu.open .mm-nav a:nth-child(5) { transition-delay: 0.25s; }
-    .mobile-menu.open .mm-nav a:nth-child(6) { transition-delay: 0.30s; }
-    .mm-nav a:hover { color: var(--gold-lt); background: rgba(255,255,255,0.04); }
-    .mm-nav a:hover::after { color: var(--gold-lt); transform: translateX(3px); }
+    .mm-nav a {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 17px 20px;
+      font-family: 'Cinzel', serif;
+      font-size: 12px;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.7);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+    .mm-nav a::after {
+      content: '›';
+      font-size: 18px;
+      color: rgba(255,255,255,0.3);
+    }
+    .mm-nav a:hover { background: rgba(255,255,255,0.05); color: #d4a44c; }
+    .mm-nav a:hover::after { color: #d4a44c; }
+    .mm-nav a.mm-donate {
+      color: #d4a44c;
+      font-weight: 700;
+    }
+    .mm-nav a.mm-donate::after { color: #d4a44c; }
 
     .mm-footer {
-      padding: 22px 22px 34px; border-top: 1px solid rgba(255,255,255,0.07);
       flex-shrink: 0;
-      opacity: 0; transform: translateY(8px);
-      transition: opacity 0.35s 0.32s, transform 0.35s 0.32s;
+      padding: 16px 20px 28px;
+      border-top: 1px solid rgba(255,255,255,0.1);
     }
-    .mobile-menu.open .mm-footer { opacity: 1; transform: translateY(0); }
-    .mm-footer-cta {
-      display: block; width: 100%; text-align: center;
-      font-family: 'Cinzel', serif; font-size: 11.5px; letter-spacing: 0.13em;
-      text-transform: uppercase; font-weight: 600;
-      background: linear-gradient(135deg, var(--gold-lt), var(--gold));
-      color: #fff; padding: 14px 20px; border-radius: 6px;
-      text-decoration: none; box-shadow: var(--shadow-gold); transition: opacity 0.3s;
-    }
-    .mm-footer-cta:hover { opacity: 0.88; }
     .mm-footer-note {
-      margin-top: 12px; text-align: center; font-size: 12px;
-      color: rgba(255,255,255,0.28); font-weight: 300;
+      text-align: center;
+      font-size: 11px;
+      color: rgba(255,255,255,0.3);
     }
-    .mm-footer-note a { color: rgba(255,255,255,0.4); text-decoration: underline; }
-    .mm-footer-note a:hover { color: var(--gold-lt); }
+    .mm-footer-note a { color: rgba(255,255,255,0.45); text-decoration: underline; }
+    .mm-footer-note a:hover { color: #d4a44c; }
 
     /* ============================================================
        SHARED SECTION HELPERS
@@ -627,16 +648,18 @@
     /* ============================================================
        RESPONSIVE
     ============================================================ */
-    @media (max-width: 1024px) {
+    @media (max-width: 1100px) {
       nav, nav.scrolled { padding-left: 24px; padding-right: 24px; }
+      .nav-links { display: none; }
+      .hamburger { display: flex; }
+    }
+    @media (max-width: 1024px) {
       .section-wrap { padding: 80px 28px; }
       footer { padding: 50px 28px 28px; }
       .sermons-header { grid-template-columns: 1fr; gap: 18px; margin-bottom: 38px; }
       .books-grid { grid-template-columns: 1fr 1fr; }
       .resources-grid { grid-template-columns: 1fr 1fr; }
       .footer-top { grid-template-columns: 1fr 1fr; gap: 36px; }
-      .nav-links { display: none; }
-      .hamburger { display: flex; }
     }
     @media (max-width: 768px) {
       .section-wrap { padding: 60px 20px; }
@@ -676,28 +699,27 @@
 <body>
 
   <!-- ── MOBILE MENU ─────────────────────────────── -->
-  <div class="mm-backdrop" id="mmBackdrop" onclick="closeMobileMenu()"></div>
+  <div class="mm-backdrop" id="mmBackdrop"></div>
   <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
     <div class="mm-header">
       <span class="mm-brand">Peter Milimo</span>
-      <button class="mm-close" onclick="closeMobileMenu()" aria-label="Close menu">
+      <button class="mm-close" id="mmClose" aria-label="Close menu">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
           <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
         </svg>
       </button>
     </div>
     <nav class="mm-nav">
-      <a href="#ministry"  onclick="closeMobileMenu()">Ministry</a>
-      <a href="#sermons"   onclick="closeMobileMenu()">Sermons</a>
-      <a href="#youtube"   onclick="closeMobileMenu()">YouTube</a>
-      <a href="#books"     onclick="closeMobileMenu()">Books</a>
-      <a href="#resources" onclick="closeMobileMenu()">Resources</a>
-      <a href="#donate"    onclick="closeMobileMenu()">Donate</a>
+      <a href="#ministry"  id="mm-l1">Ministry</a>
+      <a href="#sermons"   id="mm-l2">Sermons</a>
+      <a href="#youtube"   id="mm-l3">YouTube</a>
+      <a href="#books"     id="mm-l4">Books</a>
+      <a href="#resources" id="mm-l5">Resources</a>
+      <a href="#donate"    id="mm-l6" class="mm-donate">Donate</a>
     </nav>
     <div class="mm-footer">
-      <a href="#donate" class="mm-footer-cta" onclick="closeMobileMenu()">Donate / Buy a Book</a>
       <div class="mm-footer-note">
-        Questions? <a href="mailto:info@petermilimo.org" onclick="closeMobileMenu()">info@petermilimo.org</a>
+        Questions? <a href="mailto:info@petermilimo.org">info@petermilimo.org</a>
       </div>
     </div>
   </div>
@@ -1485,30 +1507,40 @@
     /* ======================================================
        MOBILE MENU
     ====================================================== */
-    const hamburger  = document.getElementById('hamburger');
-    const mobileMenu = document.getElementById('mobileMenu');
-    const mmBackdrop = document.getElementById('mmBackdrop');
+    var _menu  = document.getElementById('mobileMenu');
+    var _bd    = document.getElementById('mmBackdrop');
+    var _hbg   = document.getElementById('hamburger');
+    var _close = document.getElementById('mmClose');
 
-    function openMobileMenu() {
-      mobileMenu.classList.add('open');
-      mmBackdrop.classList.add('open');
-      hamburger.classList.add('is-open');
-      hamburger.setAttribute('aria-expanded', 'true');
-      mobileMenu.setAttribute('aria-hidden', 'false');
-      document.body.style.overflow = 'hidden';
-    }
     function closeMobileMenu() {
-      mobileMenu.classList.remove('open');
-      mmBackdrop.classList.remove('open');
-      hamburger.classList.remove('is-open');
-      hamburger.setAttribute('aria-expanded', 'false');
-      mobileMenu.setAttribute('aria-hidden', 'true');
+      _menu.classList.remove('open');
+      _bd.classList.remove('open');
+      _hbg.classList.remove('is-open');
       document.body.style.overflow = '';
     }
-    hamburger.addEventListener('click', () => {
-      mobileMenu.classList.contains('open') ? closeMobileMenu() : openMobileMenu();
+
+    function openMobileMenu() {
+      _menu.classList.add('open');
+      _bd.classList.add('open');
+      _hbg.classList.add('is-open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    _hbg.addEventListener('click', function () {
+      _menu.classList.contains('open') ? closeMobileMenu() : openMobileMenu();
     });
-    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMobileMenu(); });
+
+    _close.addEventListener('click', closeMobileMenu);
+    _bd.addEventListener('click', closeMobileMenu);
+
+    /* Close when any nav link is clicked */
+    document.querySelectorAll('.mm-nav a').forEach(function (a) {
+      a.addEventListener('click', closeMobileMenu);
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') closeMobileMenu();
+    });
 
     /* ======================================================
        SCROLL REVEAL
