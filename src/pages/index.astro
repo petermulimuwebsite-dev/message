@@ -1488,13 +1488,75 @@
       if (txt) txt.textContent = `Order Total: KSh ${total.toLocaleString()} (${qty} × KSh ${price.toLocaleString()})`;
       if (box) box.style.display = 'block';
     }
-    function handlePay(method) {
+    // function handlePay(method) {
       // alert(
       //   `Payment gateway ready to connect.\n\nFlow: "${method}"\n\n` +
       //   `Aggregator → replace with Pesapal / Flutterwave / Paystack SDK.\n` +
       //   `PayPal → replace with PayPal JS SDK or PayPal.me redirect.`
       // );
+    // }
+
+
+    async function handlePay(method) {
+  const isDonation = method.includes("donation");
+  const isBook = method.includes("book");
+
+  // --- Read form values ---
+  let amount, description, name, email, phone;
+
+  if (isDonation) {
+    amount = document.getElementById("donation-amount")?.value?.trim();
+    name   = document.getElementById("donation-name")?.value?.trim()  || "Donor";
+    email  = document.getElementById("donation-email")?.value?.trim() || "";
+    phone  = document.getElementById("donation-phone")?.value?.trim() || "";
+    description = "Church Donation";
+  } else if (isBook) {
+    const sel = document.getElementById("book-select");
+    const qty = parseInt(document.getElementById("book-qty")?.value) || 1;
+    const price = parseInt(sel?.value) || 0;
+    amount      = String(price * qty);
+    name        = document.getElementById("book-name")?.value?.trim()  || "Buyer";
+    email       = document.getElementById("book-email")?.value?.trim() || "";
+    phone       = document.getElementById("book-phone")?.value?.trim() || "";
+    description = sel?.options[sel.selectedIndex]?.text || "Book Purchase";
+  }
+
+  // --- Validate ---
+  if (!amount || isNaN(Number(amount)) || Number(amount) <= 0) {
+    alert("Please enter a valid amount.");
+    return;
+  }
+
+  // --- Show loading state ---
+  const btn = document.querySelector(`[onclick*="${method}"]`);
+  const originalText = btn?.textContent;
+  if (btn) { btn.disabled = true; btn.textContent = "Processing…"; }
+
+  try {
+    const response = await fetch("/api/pesapal-pay", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ amount, description, name, email, phone }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok || !data.success) {
+      throw new Error(data.message || "Payment initiation failed.");
     }
+
+    if (!data.redirect_url) {
+      throw new Error("No redirect URL from Pesapal. Check your IPN registration.");
+    }
+
+    // Redirect user to Pesapal hosted payment page
+    window.location.href = data.redirect_url;
+
+  } catch (err) {
+    alert("Payment error: " + err.message);
+    if (btn) { btn.disabled = false; btn.textContent = originalText; }
+  }
+}
 
     /* ======================================================
        NAV SCROLL
