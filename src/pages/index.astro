@@ -127,7 +127,7 @@
       cursor: pointer; background: none;
       border: 1px solid rgba(255,255,255,0.3); border-radius: 4px;
       padding: 9px 11px; width: 44px; height: 38px;
-      position: relative; z-index: 200; transition: border-color 0.3s;
+      position: relative; z-index: 99; transition: border-color 0.3s;
       flex-shrink: 0;
     }
     nav.scrolled .hamburger { border-color: var(--card-border); }
@@ -149,7 +149,7 @@
       display: none;
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      z-index: 140;
+      z-index: 500;
       background: rgba(10,16,40,0.65);
       backdrop-filter: blur(3px);
       -webkit-backdrop-filter: blur(3px);
@@ -162,7 +162,7 @@
       width: 290px;
       height: 100%;
       background: #1c2850;
-      z-index: 150;
+      z-index: 600;
       display: flex;
       flex-direction: column;
       box-shadow: -6px 0 40px rgba(0,0,0,0.4);
@@ -717,11 +717,7 @@
       <a href="#resources" id="mm-l5">Resources</a>
       <a href="#donate"    id="mm-l6" class="mm-donate">Donate</a>
     </nav>
-    <div class="mm-footer">
-      <div class="mm-footer-note">
-        Questions? <a href="mailto:info@petermilimo.org">info@petermilimo.org</a>
-      </div>
-    </div>
+    <div class="mm-footer" style="display:none;"></div>
   </div>
 
   <!-- ── NAV ──────────────────────────────────────── -->
@@ -1488,13 +1484,7 @@
       if (txt) txt.textContent = `Order Total: KSh ${total.toLocaleString()} (${qty} × KSh ${price.toLocaleString()})`;
       if (box) box.style.display = 'block';
     }
-    // function handlePay(method) {
-      // alert(
-      //   `Payment gateway ready to connect.\n\nFlow: "${method}"\n\n` +
-      //   `Aggregator → replace with Pesapal / Flutterwave / Paystack SDK.\n` +
-      //   `PayPal → replace with PayPal JS SDK or PayPal.me redirect.`
-      // );
-    // }
+    
 
 
     async function handlePay(method) {
