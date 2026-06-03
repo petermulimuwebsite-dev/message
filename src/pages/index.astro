@@ -69,6 +69,8 @@
       display: flex; align-items: center; justify-content: space-between;
       transition: background 0.4s, padding 0.4s, box-shadow 0.4s;
     }
+    nav.menu-open { pointer-events: none; }
+    nav.menu-open .hamburger { pointer-events: all; }
     nav.scrolled {
       background: rgba(255,255,255,0.96);
       backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
@@ -709,14 +711,14 @@
         </svg>
       </button>
     </div>
-    <nav class="mm-nav">
+    <div class="mm-nav">
       <a href="#ministry"  id="mm-l1">Ministry</a>
       <a href="#sermons"   id="mm-l2">Sermons</a>
       <a href="#youtube"   id="mm-l3">YouTube</a>
       <a href="#books"     id="mm-l4">Books</a>
       <a href="#resources" id="mm-l5">Resources</a>
       <a href="#donate"    id="mm-l6" class="mm-donate">Donate</a>
-    </nav>
+    </div>
     <div class="mm-footer" style="display:none;"></div>
   </div>
 
@@ -1485,8 +1487,6 @@
       if (box) box.style.display = 'block';
     }
     
-
-
     async function handlePay(method) {
   const isDonation = method.includes("donation");
   const isBook = method.includes("book");
@@ -1563,11 +1563,13 @@
     var _bd    = document.getElementById('mmBackdrop');
     var _hbg   = document.getElementById('hamburger');
     var _close = document.getElementById('mmClose');
+    var _nav   = document.getElementById('navbar');
 
     function closeMobileMenu() {
       _menu.classList.remove('open');
       _bd.classList.remove('open');
       _hbg.classList.remove('is-open');
+      _nav.classList.remove('menu-open');
       document.body.style.overflow = '';
     }
 
@@ -1575,6 +1577,7 @@
       _menu.classList.add('open');
       _bd.classList.add('open');
       _hbg.classList.add('is-open');
+      _nav.classList.add('menu-open');
       document.body.style.overflow = 'hidden';
     }
 
