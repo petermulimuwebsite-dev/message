@@ -17,12 +17,30 @@ export const POST: APIRoute = async ({ request }) => {
     const orderId = "DONATION-" + Date.now();
 
     // Use the registered IPN ID from .env
-    const notificationId = import.meta.env.PESAPAL_IPN_ID;
-    if (!notificationId) {
-      throw new Error(
-        "PESAPAL_IPN_ID not set. Visit /api/pesapal-register-ipn to register your IPN URL first."
-      );
-    }
+    // const notificationId = import.meta.env.PESAPAL_IPN_ID;
+    // if (!notificationId) {
+    //   throw new Error(
+    //     "PESAPAL_IPN_ID not set. Visit /api/pesapal-register-ipn to register your IPN URL first."
+    //   );
+    // }
+
+
+
+// AFTER — safe, only throws at runtime when payment is attempted
+const notificationId = import.meta.env.PESAPAL_IPN_ID ?? "";
+if (!notificationId) {
+  return new Response(
+    JSON.stringify({
+      success: false,
+      message: "Payment not configured yet. PESAPAL_IPN_ID is missing.",
+    }),
+    { status: 503, headers: { "Content-Type": "application/json" } }
+  );
+}
+
+
+
+
 
     const response = await fetch(
       `${import.meta.env.PESAPAL_BASE_URL}/api/Transactions/SubmitOrderRequest`,
