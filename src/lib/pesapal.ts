@@ -20,18 +20,21 @@ export async function getPesapalToken(): Promise<string> {
     }
   );
 
-  if (!response.ok) {
-    throw new Error(`Failed to get Pesapal token: ${response.status}`);
-  }
-
   const data = await response.json();
 
+  if (!response.ok) {
+    throw new Error(
+      `Pesapal auth failed (${response.status}): ${JSON.stringify(data)}`
+    );
+  }
+
   if (!data.token) {
-    throw new Error("No token in Pesapal response");
+    throw new Error(
+      `Pesapal returned no token. Full response: ${JSON.stringify(data)}`
+    );
   }
 
   cachedToken = data.token;
-  // Tokens are valid for 5 minutes; refresh 30s early
   tokenExpiry = Date.now() + 4.5 * 60 * 1000;
 
   return cachedToken;
