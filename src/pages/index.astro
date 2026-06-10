@@ -412,7 +412,7 @@
        BOOKS
     ============================================================ */
     .books-header { display: grid; grid-template-columns: 1fr auto; align-items: end; margin-bottom: 52px; gap: 40px; }
-    .books-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px; }
+    .books-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 32px; max-width: 900px; margin: 0 auto; }
 
     .book-card { border-radius: 10px; overflow: hidden; background: var(--card-bg); border: 1px solid var(--card-border); display: flex; flex-direction: column; transition: transform 0.45s, box-shadow 0.45s; }
     .book-card:hover { transform: translateY(-8px); box-shadow: var(--shadow-lg); }
@@ -435,6 +435,8 @@
     .book-cat { font-family: 'Cinzel', serif; font-size: 8.5px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--gold-lt); margin-bottom: 9px; }
     .book-cover-title { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 700; color: #fff; line-height: 1.15; margin-bottom: 5px; }
     .book-cover-author { font-size: 11.5px; font-weight: 300; color: rgba(255,255,255,0.46); letter-spacing: 0.1em; }
+    .book-cover-subtitle { font-size: 11px; font-style: italic; font-weight: 300; color: rgba(255,255,255,0.55); line-height: 1.45; margin-bottom: 7px; }
+    .book-format-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(184,132,42,0.1); border: 1px solid rgba(184,132,42,0.25); border-radius: 4px; padding: 4px 10px; font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold); margin-bottom: 4px; }
     .book-body { padding: 20px 22px 22px; display: flex; flex-direction: column; gap: 14px; flex: 1; }
     .book-desc { font-size: 13.5px; color: var(--text-body); line-height: 1.75; font-weight: 300; flex: 1; }
     .book-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
@@ -620,7 +622,7 @@
       .sermon-excerpt { font-size: 13px; margin-bottom: 14px; }
       .sermon-dur { display: none; }
       .yt-grid { grid-template-columns: 1fr; }
-      .books-grid { grid-template-columns: 1fr; }
+      .books-grid { grid-template-columns: 1fr; max-width: 480px; }
       .books-header { grid-template-columns: 1fr; }
       .resources-grid { grid-template-columns: 1fr; }
       .intro-grid { grid-template-columns: 1fr; gap: 38px; }
@@ -880,7 +882,7 @@
         <div>
           <div class="eyebrow">Kingdom Resources</div>
           <h2 class="section-title">Books by <em>Peter Milimo</em></h2>
-          <p class="section-sub" style="margin-top:10px;">Marriage teachings, leadership guides, and biblical empowerment resources. Pay via M-Pesa Paybill (Co-operative Bank).</p>
+          <p class="section-sub" style="margin-top:10px;">Both books are available as softcopy (PDF / eBook) at <strong>KSh 1,200</strong> each. Pay via M-Pesa Paybill and receive your copy by email.</p>
         </div>
         <a href="#donate" class="btn-ghost">Order &amp; Pay</a>
       </div>
@@ -954,7 +956,7 @@
               </div>
 
               <div class="confirm-box" style="margin-top:16px;">
-                <strong>After paying:</strong> Send your M-Pesa confirmation code, your name, and delivery address to <strong>info@petermilimo.org</strong> or message us on Facebook. We will confirm and arrange delivery.
+                <strong>After paying:</strong> Send your M-Pesa confirmation code, your name, and the book title to <strong>biblebcc@gmail.com</strong> or message us on Facebook. We will send your softcopy (PDF) by email promptly.
               </div>
             </div>
 
@@ -1073,7 +1075,7 @@
                   </button>
                 </a>
                 <div class="pp-or">or send directly to</div>
-                <div class="pay-notice"><strong>give@petermilimo.org</strong> — Send your PayPal donation here and include "Ministry Gift" in the notes.</div>
+                <div class="pay-notice"><strong>biblebcc@gmail.com</strong> — Send your PayPal donation here and include "Ministry Gift" in the notes.</div>
                 <p class="pay-secure">
                   <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                   PayPal Buyer Protection · Encrypted
@@ -1130,12 +1132,12 @@
           <div class="contact-detail">Watch &amp; Subscribe</div>
         </a>
 
-        <a href="mailto:info@petermilimo.org" class="contact-tile">
+        <a href="mailto:biblebcc@gmail.com" class="contact-tile">
           <div class="icon-tile">
             <svg viewBox="0 0 24 24" fill="none" stroke="var(--gold-lt)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
           </div>
           <div class="contact-label">Email</div>
-          <div class="contact-detail">info@petermilimo.org</div>
+          <div class="contact-detail">biblebcc@gmail.com</div>
         </a>
 
       </div>
@@ -1182,7 +1184,7 @@
           <ul>
             <li><a href="https://web.facebook.com/people/Life-Principles-with-Peter-Milimo/61590553761890/?rdid=fmL8IUONYOVooBWD&share_url=https%3A%2F%2Fweb.facebook.com%2Fshare%2F1HAGGD3H6e%2F%3F_rdc%3D1%26_rdr" target="_blank">Facebook</a></li>
             <li><a href="https://youtube.com/@biblebelieverschristchurch?si=ovKptXMH-4ZL1Ryt" target="_blank">YouTube</a></li>
-            <li><a href="mailto:info@petermilimo.org">Email Us</a></li>
+            <li><a href="mailto:biblebcc@gmail.com">Email Us</a></li>
             <li><a href="https://www.petermilimo.org" target="_blank">petermilimo.org</a></li>
           </ul>
         </div>
@@ -1196,7 +1198,7 @@
           <a href="https://youtube.com/@biblebelieverschristchurch?si=ovKptXMH-4ZL1Ryt" target="_blank" aria-label="YouTube">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M23.495 6.205a3.007 3.007 0 0 0-2.088-2.088c-1.87-.501-9.396-.501-9.396-.501s-7.507-.01-9.396.501A3.007 3.007 0 0 0 .527 6.205a31.247 31.247 0 0 0-.522 5.805 31.247 31.247 0 0 0 .522 5.783 3.007 3.007 0 0 0 2.088 2.088c1.868.502 9.396.502 9.396.502s7.506 0 9.396-.502a3.007 3.007 0 0 0 2.088-2.088 31.247 31.247 0 0 0 .5-5.783 31.247 31.247 0 0 0-.5-5.805zM9.609 15.601V8.408l6.264 3.602z"/></svg>
           </a>
-          <a href="mailto:info@petermilimo.org" aria-label="Email">
+          <a href="mailto:biblebcc@gmail.com" aria-label="Email">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
           </a>
         </div>
@@ -1239,25 +1241,22 @@
 
     const books = [
       {
-        title:  "Secrets of a Strong Marriage",
+        title:  "When One Becomes Both",
+        author: "Peter Milimo",
+        cat:    "Single Parenting & Family",
+        sub:    "How Single Parents Rise, Heal and Build Strong Families Against All Odds",
+        desc:   "A powerful, compassionate guide for single parents navigating the journey of raising a family alone — covering healing, resilience, identity, and building a home that thrives against every odd.",
+        price:  "KSh 1,200",
+        format: "Softcopy (PDF / eBook)",
+      },
+      {
+        title:  "The Thirteen Effective Pillars of a Covenant Marriage",
         author: "Peter Milimo",
         cat:    "Marriage & Family",
-        desc:   "A practical, biblically grounded guide to building a marriage that withstands every storm — covering communication, intimacy, restoration, and covenant commitment.",
+        sub:    "A Biblical Guide for Building a Strong, Faithful & Divorce-Resistant Union",
+        desc:   "An in-depth biblical roadmap through thirteen essential pillars every covenant marriage must stand on — equipping couples to build a strong, faithful, and divorce-resistant union grounded in God's Word.",
         price:  "KSh 1,200",
-      },
-      {
-        title:  "The Leader God Can Trust",
-        author: "Peter Milimo",
-        cat:    "Christian Leadership",
-        desc:   "An essential read for pastors, business leaders, and community figures — unpacking the character, wisdom, and spiritual depth that God requires in those He anoints to lead.",
-        price:  "KSh 1,200",
-      },
-      {
-        title:  "Ignite: A Youth Empowerment Devotional",
-        author: "Peter Milimo",
-        cat:    "Youth & Spiritual Growth",
-        desc:   "A 30-day devotional for young people — igniting faith, identity, and purpose through daily Scripture, reflection, and practical challenges to live boldly for Christ.",
-        price:  "KSh 1,200",
+        format: "Softcopy (PDF / eBook)",
       },
     ];
 
@@ -1306,13 +1305,13 @@
     function renderBooks() {
       const el = document.getElementById('booksGrid');
       if (!el) return;
-      const bgs    = ['bcb-1','bcb-2','bcb-3'];
-      const spines = ['bs-1','bs-2','bs-3'];
+      const bgs    = ['bcb-1','bcb-2'];
+      const spines = ['bs-1','bs-2'];
       el.innerHTML = books.map((b, i) => `
-        <div class="book-card reveal d${(i%3)+1}">
+        <div class="book-card reveal d${i+1}">
           <div class="book-cover">
-            <div class="book-cover-bg ${bgs[i%3]}"></div>
-            <div class="book-spine ${spines[i%3]}"></div>
+            <div class="book-cover-bg ${bgs[i]}"></div>
+            <div class="book-spine ${spines[i]}"></div>
             <div class="book-orn-t"></div>
             <div class="book-orn-b"></div>
             <div class="book-cross">
@@ -1325,14 +1324,19 @@
             <div class="book-cover-text">
               <div class="book-cat">${b.cat}</div>
               <div class="book-cover-title">${b.title}</div>
+              <div class="book-cover-subtitle">${b.sub}</div>
               <div class="book-cover-author">${b.author}</div>
             </div>
           </div>
           <div class="book-body">
+            <div class="book-format-badge">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              ${b.format}
+            </div>
             <p class="book-desc">${b.desc}</p>
             <div class="book-btns">
-              <a href="#donate" class="btn-book btn-book-gold" onclick="switchTabByName('mpesa')">Buy Now</a>
-              <a href="https://web.facebook.com/people/Life-Principles-with-Peter-Milimo/61590553761890/?rdid=fmL8IUONYOVooBWD&share_url=https%3A%2F%2Fweb.facebook.com%2Fshare%2F1HAGGD3H6e%2F%3F_rdc%3D1%26_rdr" target="_blank" class="btn-book btn-book-ghost">Facebook</a>
+              <a href="#donate" class="btn-book btn-book-gold" onclick="switchTabByName('mpesa')">Buy Softcopy</a>
+              <a href="mailto:biblebcc@gmail.com" class="btn-book btn-book-ghost">Email to Order</a>
             </div>
           </div>
         </div>
