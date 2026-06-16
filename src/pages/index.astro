@@ -1,3 +1,18 @@
+---
+import { getCollection, getEntry } from 'astro:content';
+
+const sermonsRaw   = await getCollection('sermons');
+const booksRaw     = await getCollection('books');
+const resourcesRaw = await getCollection('resources');
+const siteRaw      = await getEntry('siteConfig', 'main');
+
+// Sort by order field where available
+const sermons   = sermonsRaw.map(e => e.data);
+const books     = booksRaw.sort((a,b) => a.data.order - b.data.order).map(e => e.data);
+const resources = resourcesRaw.sort((a,b) => a.data.order - b.data.order).map(e => e.data);
+const site      = siteRaw!.data;
+---
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,42 +24,30 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Cinzel:wght@400;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet" />
 
-  <style is:global>
+  <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    /* ============================================================
-       DESIGN TOKENS
-    ============================================================ */
     :root {
-      /* Brand colours */
       --navy:          #1c2850;
       --navy-mid:      #243068;
       --gold:          #b8842a;
       --gold-lt:       #d4a44c;
       --gold-pale:     #f5e4b8;
-
-      /* Warm section backgrounds — never harsh, never cold */
-      --bg-hero:       #1c2850;        /* hero stays deep navy */
-      --bg-cream:      #fefcf7;        /* ministry intro */
-      --bg-parchment:  #faf6ee;        /* sermons */
-      --bg-white:      #ffffff;        /* youtube / books */
-      --bg-linen:      #f6f1e7;        /* resources */
-      --bg-blush:      #fdf8f2;        /* donate */
-      --bg-warm-mist:  #f4f7fb;        /* contact bar */
-      --bg-navy:       #1c2850;        /* about stats */
-
-      /* Text */
+      --bg-hero:       #1c2850;
+      --bg-cream:      #fefcf7;
+      --bg-parchment:  #faf6ee;
+      --bg-white:      #ffffff;
+      --bg-linen:      #f6f1e7;
+      --bg-blush:      #fdf8f2;
+      --bg-warm-mist:  #f4f7fb;
+      --bg-navy:       #1c2850;
       --text-dark:     #181c2c;
       --text-mid:      #2d3660;
       --text-body:     #4a556e;
       --text-dim:      #8a96b0;
-
-      /* Cards */
       --card-bg:       #ffffff;
       --card-border:   #ece7db;
       --gold-border:   rgba(184,132,42,0.2);
-
-      /* Shadows */
       --shadow-sm:     0 2px 12px rgba(50,40,20,0.07);
       --shadow-md:     0 8px 32px rgba(50,40,20,0.10);
       --shadow-lg:     0 20px 60px rgba(50,40,20,0.13);
@@ -52,126 +55,49 @@
     }
 
     html { scroll-behavior: smooth; }
+    body { font-family: 'Lato', sans-serif; background: var(--bg-cream); color: var(--text-body); overflow-x: hidden; }
 
-    body {
-      font-family: 'Lato', sans-serif;
-      background: var(--bg-cream);
-      color: var(--text-body);
-      overflow-x: hidden;
-    }
-
-    /* ============================================================
-       NAVIGATION
-    ============================================================ */
-    nav {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-      padding: 20px 60px;
-      display: flex; align-items: center; justify-content: space-between;
-      transition: background 0.4s, padding 0.4s, box-shadow 0.4s;
-    }
+    /* NAV */
+    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 20px 60px; display: flex; align-items: center; justify-content: space-between; transition: background 0.4s, padding 0.4s, box-shadow 0.4s; }
     nav.menu-open { pointer-events: none; }
     nav.menu-open .hamburger { pointer-events: all; }
-    nav.scrolled {
-      background: rgba(255,255,255,0.96);
-      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-      padding: 13px 60px;
-      box-shadow: 0 2px 24px rgba(50,40,20,0.09);
-      border-bottom: 1px solid var(--card-border);
-    }
-
+    nav.scrolled { background: rgba(255,255,255,0.96); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); padding: 13px 60px; box-shadow: 0 2px 24px rgba(50,40,20,0.09); border-bottom: 1px solid var(--card-border); }
     .logo { display: flex; align-items: center; gap: 12px; text-decoration: none; }
     .logo-mark { width: 40px; height: 40px; flex-shrink: 0; }
     .logo-mark svg { width: 100%; height: 100%; }
     .logo-text { display: flex; flex-direction: column; line-height: 1; }
-    .logo-name {
-      font-family: 'Cinzel', serif; font-size: 13px; font-weight: 700;
-      letter-spacing: 0.1em; text-transform: uppercase;
-      color: #fff; transition: color 0.4s;
-    }
-    .logo-sub {
-      font-family: 'Cormorant Garamond', serif; font-size: 11px; font-weight: 300;
-      letter-spacing: 0.18em; text-transform: uppercase;
-      color: rgba(255,255,255,0.6); margin-top: 3px; transition: color 0.4s;
-    }
+    .logo-name { font-family: 'Cinzel', serif; font-size: 13px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #fff; transition: color 0.4s; }
+    .logo-sub { font-family: 'Cormorant Garamond', serif; font-size: 11px; font-weight: 300; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,255,255,0.6); margin-top: 3px; transition: color 0.4s; }
     nav.scrolled .logo-name { color: var(--navy); }
     nav.scrolled .logo-sub  { color: var(--text-dim); }
-
     .nav-links { display: flex; align-items: center; gap: 30px; list-style: none; }
-    .nav-links a {
-      font-family: 'Cinzel', serif; font-size: 10.5px; font-weight: 400;
-      letter-spacing: 0.13em; text-transform: uppercase;
-      color: rgba(255,255,255,0.82); text-decoration: none; transition: color 0.3s;
-      position: relative;
-    }
-    .nav-links a::after {
-      content: ''; position: absolute; bottom: -4px; left: 0; right: 0;
-      height: 1px; background: var(--gold-lt);
-      transform: scaleX(0); transform-origin: left; transition: transform 0.3s;
-    }
+    .nav-links a { font-family: 'Cinzel', serif; font-size: 10.5px; font-weight: 400; letter-spacing: 0.13em; text-transform: uppercase; color: rgba(255,255,255,0.82); text-decoration: none; transition: color 0.3s; position: relative; }
+    .nav-links a::after { content: ''; position: absolute; bottom: -4px; left: 0; right: 0; height: 1px; background: var(--gold-lt); transform: scaleX(0); transform-origin: left; transition: transform 0.3s; }
     .nav-links a:hover::after { transform: scaleX(1); }
     nav.scrolled .nav-links a { color: var(--text-mid); }
     nav.scrolled .nav-links a:hover { color: var(--gold); }
-
-    .nav-cta {
-      font-family: 'Cinzel', serif; font-size: 10.5px; letter-spacing: 0.13em;
-      text-transform: uppercase; font-weight: 600;
-      background: linear-gradient(135deg, var(--gold-lt), var(--gold));
-      color: #fff !important; padding: 10px 22px; border-radius: 3px;
-      text-decoration: none; box-shadow: var(--shadow-gold);
-      transition: opacity 0.3s, transform 0.3s !important;
-    }
+    .nav-cta { font-family: 'Cinzel', serif; font-size: 10.5px; letter-spacing: 0.13em; text-transform: uppercase; font-weight: 600; background: linear-gradient(135deg, var(--gold-lt), var(--gold)); color: #fff !important; padding: 10px 22px; border-radius: 3px; text-decoration: none; box-shadow: var(--shadow-gold); transition: opacity 0.3s, transform 0.3s !important; }
     .nav-cta::after { display: none !important; }
     .nav-cta:hover { opacity: 0.88; transform: translateY(-1px); }
-
-    .hamburger {
-      display: none; flex-direction: column; justify-content: center; gap: 5px;
-      cursor: pointer; background: none;
-      border: 1px solid rgba(255,255,255,0.3); border-radius: 4px;
-      padding: 9px 11px; width: 44px; height: 38px;
-      position: relative; z-index: 99; transition: border-color 0.3s;
-      flex-shrink: 0;
-    }
+    .hamburger { display: none; flex-direction: column; justify-content: center; gap: 5px; cursor: pointer; background: none; border: 1px solid rgba(255,255,255,0.3); border-radius: 4px; padding: 9px 11px; width: 44px; height: 38px; position: relative; z-index: 99; transition: border-color 0.3s; flex-shrink: 0; }
     nav.scrolled .hamburger { border-color: var(--card-border); }
     .hamburger:hover { border-color: var(--gold-lt); }
-    .hamburger span {
-      display: block; width: 22px; height: 2px; border-radius: 2px;
-      background: #fff; transition: transform 0.35s, opacity 0.25s, background 0.4s;
-      transform-origin: center;
-    }
+    .hamburger span { display: block; width: 22px; height: 2px; border-radius: 2px; background: #fff; transition: transform 0.35s, opacity 0.25s, background 0.4s; transform-origin: center; }
     nav.scrolled .hamburger span { background: var(--navy); }
     .hamburger.is-open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
     .hamburger.is-open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
     .hamburger.is-open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
-    /* ============================================================
-       MOBILE MENU
-    ============================================================ */
-    .mm-backdrop {
-      display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-      z-index: 500; background: rgba(10,16,40,0.65);
-      backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px);
-    }
+    /* MOBILE MENU */
+    .mm-backdrop { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 500; background: rgba(10,16,40,0.65); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); }
     .mm-backdrop.open { display: block; }
-
-    .mobile-menu {
-      position: fixed; top: 0; right: 0; width: 290px; height: 100%;
-      background: #1c2850; z-index: 600; display: flex; flex-direction: column;
-      box-shadow: -6px 0 40px rgba(0,0,0,0.4);
-      transform: translateX(100%); transition: transform 0.32s ease;
-    }
+    .mobile-menu { position: fixed; top: 0; right: 0; width: 290px; height: 100%; background: #1c2850; z-index: 600; display: flex; flex-direction: column; box-shadow: -6px 0 40px rgba(0,0,0,0.4); transform: translateX(100%); transition: transform 0.32s ease; }
     .mobile-menu.open { transform: translateX(0); }
-
-    .mm-header {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 20px 20px 18px 20px;
-      border-bottom: 1px solid rgba(255,255,255,0.1);
-      background: #1c2850; flex-shrink: 0;
-    }
+    .mm-header { display: flex; align-items: center; justify-content: space-between; padding: 20px 20px 18px 20px; border-bottom: 1px solid rgba(255,255,255,0.1); background: #1c2850; flex-shrink: 0; }
     .mm-brand { font-family: 'Cinzel', serif; font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: #d4a44c; }
     .mm-close { width: 32px; height: 32px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; color: rgba(255,255,255,0.8); cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
     .mm-close:hover { background: rgba(212,164,76,0.2); border-color: #d4a44c; color: #d4a44c; }
     .mm-close svg { width: 14px; height: 14px; }
-
     .mm-nav { flex: 1; display: flex; flex-direction: column; overflow-y: auto; padding-top: 8px; }
     .mm-nav a { display: flex; align-items: center; justify-content: space-between; padding: 17px 20px; font-family: 'Cinzel', serif; font-size: 12px; letter-spacing: 0.13em; text-transform: uppercase; color: rgba(255,255,255,0.7); text-decoration: none; border-bottom: 1px solid rgba(255,255,255,0.07); }
     .mm-nav a::after { content: '›'; font-size: 18px; color: rgba(255,255,255,0.3); }
@@ -180,86 +106,30 @@
     .mm-nav a.mm-donate { color: #d4a44c; font-weight: 700; }
     .mm-nav a.mm-donate::after { color: #d4a44c; }
 
-    .mm-footer { flex-shrink: 0; padding: 16px 20px 28px; border-top: 1px solid rgba(255,255,255,0.1); }
-    .mm-footer-note { text-align: center; font-size: 11px; color: rgba(255,255,255,0.3); }
-    .mm-footer-note a { color: rgba(255,255,255,0.45); text-decoration: underline; }
-    .mm-footer-note a:hover { color: #d4a44c; }
-
-    /* ============================================================
-       SHARED SECTION HELPERS
-    ============================================================ */
+    /* SHARED */
     .section-wrap { padding: 100px 60px; max-width: 1280px; margin: 0 auto; }
-
-    .eyebrow {
-      font-family: 'Cinzel', serif; font-size: 10px;
-      letter-spacing: 0.28em; text-transform: uppercase; color: var(--gold);
-      margin-bottom: 14px; display: flex; align-items: center; gap: 14px;
-    }
+    .eyebrow { font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 0.28em; text-transform: uppercase; color: var(--gold); margin-bottom: 14px; display: flex; align-items: center; gap: 14px; }
     .eyebrow::before { content: ''; display: block; width: 26px; height: 1px; background: var(--gold); opacity: 0.6; }
     .eyebrow.center { justify-content: center; padding-left: 40px; }
-
-    .section-title {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: clamp(30px, 4vw, 52px); font-weight: 300;
-      color: var(--text-dark); line-height: 1.1; letter-spacing: -0.01em; margin-bottom: 14px;
-    }
+    .section-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(30px, 4vw, 52px); font-weight: 300; color: var(--text-dark); line-height: 1.1; letter-spacing: -0.01em; margin-bottom: 14px; }
     .section-title em { font-style: italic; color: var(--gold); }
     .section-title.light { color: #fff; }
     .section-title.light em { color: var(--gold-lt); }
-
     .section-sub { font-size: 16px; font-weight: 300; color: var(--text-body); line-height: 1.85; max-width: 520px; }
-
-    .icon-tile {
-      width: 48px; height: 48px; border-radius: 10px; background: var(--navy);
-      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-    }
+    .icon-tile { width: 48px; height: 48px; border-radius: 10px; background: var(--navy); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
     .icon-tile svg { width: 22px; height: 22px; stroke: var(--gold-lt); fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
-
-    .btn-primary {
-      font-family: 'Cinzel', serif; font-size: 11.5px; letter-spacing: 0.13em;
-      text-transform: uppercase; font-weight: 600;
-      background: linear-gradient(135deg, var(--gold-lt), var(--gold));
-      color: #fff; padding: 15px 36px; border-radius: 3px;
-      text-decoration: none; border: none; cursor: pointer;
-      box-shadow: var(--shadow-gold); position: relative; overflow: hidden;
-      display: inline-block; transition: all 0.35s;
-    }
+    .btn-primary { font-family: 'Cinzel', serif; font-size: 11.5px; letter-spacing: 0.13em; text-transform: uppercase; font-weight: 600; background: linear-gradient(135deg, var(--gold-lt), var(--gold)); color: #fff; padding: 15px 36px; border-radius: 3px; text-decoration: none; border: none; cursor: pointer; box-shadow: var(--shadow-gold); position: relative; overflow: hidden; display: inline-block; transition: all 0.35s; }
     .btn-primary::before { content: ''; position: absolute; inset: 0; background: rgba(255,255,255,0.14); transform: translateX(-100%); transition: transform 0.4s; }
     .btn-primary:hover::before { transform: translateX(100%); }
     .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 14px 40px rgba(184,132,42,0.4); }
-
-    .btn-outline {
-      font-family: 'Cinzel', serif; font-size: 11.5px; letter-spacing: 0.13em;
-      text-transform: uppercase; font-weight: 400;
-      color: rgba(255,255,255,0.85); padding: 14px 36px; border-radius: 3px;
-      text-decoration: none; border: 1px solid rgba(255,255,255,0.3);
-      cursor: pointer; background: transparent; transition: all 0.3s; display: inline-block;
-    }
+    .btn-outline { font-family: 'Cinzel', serif; font-size: 11.5px; letter-spacing: 0.13em; text-transform: uppercase; font-weight: 400; color: rgba(255,255,255,0.85); padding: 14px 36px; border-radius: 3px; text-decoration: none; border: 1px solid rgba(255,255,255,0.3); cursor: pointer; background: transparent; transition: all 0.3s; display: inline-block; }
     .btn-outline:hover { border-color: var(--gold-lt); color: var(--gold-lt); transform: translateY(-2px); }
-
-    .btn-ghost {
-      font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 0.12em;
-      text-transform: uppercase; font-weight: 400;
-      color: var(--text-mid); padding: 12px 24px; border-radius: 3px;
-      text-decoration: none; border: 1px solid var(--card-border);
-      cursor: pointer; background: transparent; transition: all 0.3s; display: inline-block;
-    }
+    .btn-ghost { font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 400; color: var(--text-mid); padding: 12px 24px; border-radius: 3px; text-decoration: none; border: 1px solid var(--card-border); cursor: pointer; background: transparent; transition: all 0.3s; display: inline-block; }
     .btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
 
-    /* ============================================================
-       HERO
-    ============================================================ */
-    #hero {
-      position: relative; min-height: 100vh;
-      display: flex; align-items: center; justify-content: center; overflow: hidden;
-    }
-    .hero-bg {
-      position: absolute; inset: 0;
-      background:
-        radial-gradient(ellipse 80% 60% at 50% 0%, rgba(212,164,76,0.13) 0%, transparent 60%),
-        radial-gradient(ellipse 50% 60% at 80% 80%, rgba(36,48,104,0.45) 0%, transparent 60%),
-        linear-gradient(160deg, #0e1630 0%, #1c2850 35%, #243068 70%, #1a2248 100%);
-    }
+    /* HERO */
+    #hero { position: relative; min-height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+    .hero-bg { position: absolute; inset: 0; background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(212,164,76,0.13) 0%, transparent 60%), radial-gradient(ellipse 50% 60% at 80% 80%, rgba(36,48,104,0.45) 0%, transparent 60%), linear-gradient(160deg, #0e1630 0%, #1c2850 35%, #243068 70%, #1a2248 100%); }
     .light-rays { position: absolute; inset: 0; pointer-events: none; }
     .light-ray { position: absolute; top: -10%; width: 2px; height: 130%; transform-origin: top center; border-radius: 2px; background: linear-gradient(180deg, rgba(212,164,76,0.22) 0%, rgba(212,164,76,0.04) 50%, transparent 100%); }
     .light-ray:nth-child(1) { left: 28%; transform: rotate(-10deg); opacity: 0.5; }
@@ -273,29 +143,13 @@
     @keyframes floatOrb { 0%,100% { transform: translateY(0) translateX(-50%); } 50% { transform: translateY(-28px) translateX(-50%); } }
     .hero-cross { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-58%); opacity: 0.028; pointer-events: none; }
     .hero-cross svg { width: 600px; height: 600px; }
-
     .hero-content { position: relative; z-index: 2; text-align: center; padding: 0 20px; max-width: 900px; }
-    .hero-eyebrow {
-      font-family: 'Cinzel', serif; font-size: 10.5px; letter-spacing: 0.28em;
-      text-transform: uppercase; color: var(--gold-lt); margin-bottom: 22px;
-      opacity: 0; animation: fadeUp 1s ease forwards 0.3s;
-      display: flex; align-items: center; justify-content: center; gap: 16px;
-    }
+    .hero-eyebrow { font-family: 'Cinzel', serif; font-size: 10.5px; letter-spacing: 0.28em; text-transform: uppercase; color: var(--gold-lt); margin-bottom: 22px; opacity: 0; animation: fadeUp 1s ease forwards 0.3s; display: flex; align-items: center; justify-content: center; gap: 16px; }
     .hero-eyebrow::before, .hero-eyebrow::after { content: ''; display: block; width: 34px; height: 1px; background: var(--gold-lt); opacity: 0.5; }
-    .hero-title {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: clamp(48px, 7.5vw, 96px); font-weight: 300; line-height: 0.95;
-      color: #fff; letter-spacing: -0.01em;
-      opacity: 0; animation: fadeUp 1.1s ease forwards 0.5s;
-    }
+    .hero-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(48px, 7.5vw, 96px); font-weight: 300; line-height: 0.95; color: #fff; letter-spacing: -0.01em; opacity: 0; animation: fadeUp 1.1s ease forwards 0.5s; }
     .hero-title em { font-style: italic; color: var(--gold-lt); }
     .hero-title .line2 { display: block; font-weight: 600; letter-spacing: 0.04em; }
-    .hero-verse {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: clamp(16px, 2.3vw, 21px); font-weight: 300; font-style: italic;
-      color: rgba(255,255,255,0.58); margin: 28px auto 10px; max-width: 600px; line-height: 1.75;
-      opacity: 0; animation: fadeUp 1.1s ease forwards 0.75s;
-    }
+    .hero-verse { font-family: 'Cormorant Garamond', serif; font-size: clamp(16px, 2.3vw, 21px); font-weight: 300; font-style: italic; color: rgba(255,255,255,0.58); margin: 28px auto 10px; max-width: 600px; line-height: 1.75; opacity: 0; animation: fadeUp 1.1s ease forwards 0.75s; }
     .hero-ref { font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 0.22em; color: var(--gold-lt); opacity: 0; animation: fadeUp 1s ease forwards 0.95s; }
     .hero-actions { display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: 46px; flex-wrap: wrap; opacity: 0; animation: fadeUp 1s ease forwards 1.15s; }
     .scroll-cue { position: absolute; bottom: 34px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 10px; cursor: pointer; opacity: 0; animation: fadeUp 1s ease forwards 1.5s; }
@@ -304,19 +158,11 @@
     @keyframes pulse { 0%,100% { opacity: 0.3; } 50% { opacity: 1; } }
     @keyframes fadeUp { from { opacity: 0; transform: translateY(26px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* ============================================================
-       MINISTRY PILLARS
-    ============================================================ */
+    /* MINISTRY */
     .intro-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 72px; align-items: center; }
     .intro-left .section-sub { max-width: 100%; font-size: 16px; margin-bottom: 16px; }
     .intro-right { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-
-    .pillar-card {
-      background: var(--card-bg); border: 1px solid var(--card-border);
-      border-radius: 10px; padding: 26px 20px;
-      transition: border-color 0.35s, transform 0.35s, box-shadow 0.35s;
-      position: relative; overflow: hidden;
-    }
+    .pillar-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 10px; padding: 26px 20px; transition: border-color 0.35s, transform 0.35s, box-shadow 0.35s; position: relative; overflow: hidden; }
     .pillar-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--gold), var(--gold-lt)); transform: scaleX(0); transform-origin: left; transition: transform 0.4s; }
     .pillar-card:hover::before { transform: scaleX(1); }
     .pillar-card:hover { border-color: var(--gold-border); transform: translateY(-4px); box-shadow: var(--shadow-md); }
@@ -324,23 +170,13 @@
     .pillar-title { font-family: 'Cinzel', serif; font-size: 11.5px; font-weight: 600; letter-spacing: 0.09em; text-transform: uppercase; color: var(--navy); margin-bottom: 8px; line-height: 1.35; }
     .pillar-desc { font-size: 13px; font-weight: 300; color: var(--text-body); line-height: 1.65; }
 
-    /* ============================================================
-       SERMONS
-    ============================================================ */
+    /* SERMONS */
     .sermons-header { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: end; margin-bottom: 52px; }
     .sermons-list { display: flex; flex-direction: column; gap: 20px; }
-
-    .sermon-card {
-      display: grid; grid-template-columns: 230px 1fr;
-      background: var(--card-bg); border: 1px solid var(--card-border);
-      border-radius: 10px; overflow: hidden;
-      transition: transform 0.4s, box-shadow 0.4s, border-color 0.4s;
-      cursor: pointer; position: relative;
-    }
+    .sermon-card { display: grid; grid-template-columns: 230px 1fr; background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 10px; overflow: hidden; transition: transform 0.4s, box-shadow 0.4s, border-color 0.4s; cursor: pointer; position: relative; }
     .sermon-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--gold), var(--gold-lt)); transform: scaleX(0); transform-origin: left; transition: transform 0.45s; z-index: 2; }
     .sermon-card:hover::before { transform: scaleX(1); }
     .sermon-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); border-color: var(--gold-border); }
-
     .sermon-panel { position: relative; overflow: hidden; min-height: 200px; display: flex; flex-direction: column; justify-content: flex-end; padding: 22px; width: 230px; flex-shrink: 0; }
     .sermon-panel-bg { position: absolute; inset: 0; }
     .spb-1 { background: linear-gradient(140deg, #081532 0%, #102260 55%, #1a3a90 100%); }
@@ -355,7 +191,6 @@
     .sermon-card:hover .sermon-play svg { fill: var(--navy); }
     .sermon-tag { position: relative; z-index: 2; font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold-lt); opacity: 0.9; }
     .sermon-verse { position: relative; z-index: 2; font-family: 'Cormorant Garamond', serif; font-size: 12.5px; font-style: italic; color: rgba(255,255,255,0.4); line-height: 1.5; margin-top: 7px; max-width: 175px; }
-
     .sermon-body { padding: 26px; display: flex; flex-direction: column; justify-content: space-between; min-width: 0; }
     .sermon-date { font-family: 'Cinzel', serif; font-size: 9.5px; letter-spacing: 0.2em; color: var(--gold); text-transform: uppercase; margin-bottom: 9px; }
     .sermon-title { font-family: 'Cormorant Garamond', serif; font-size: 23px; font-weight: 600; color: var(--text-dark); line-height: 1.2; margin-bottom: 8px; }
@@ -363,7 +198,6 @@
     .sermon-speaker::before { content: ''; display: inline-block; width: 16px; height: 1px; background: var(--text-dim); opacity: 0.5; flex-shrink: 0; }
     .sermon-excerpt { font-size: 13.5px; font-weight: 300; color: var(--text-body); line-height: 1.75; margin-bottom: 20px; }
     .sermon-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
-
     .btn-sm { font-family: 'Cinzel', serif; font-size: 9.5px; letter-spacing: 0.12em; text-transform: uppercase; padding: 9px 16px; border-radius: 3px; text-decoration: none; cursor: pointer; border: 1px solid; transition: all 0.3s; display: inline-flex; align-items: center; gap: 6px; }
     .btn-sm-gold { background: rgba(184,132,42,0.08); color: var(--gold); border-color: rgba(184,132,42,0.28); }
     .btn-sm-gold:hover { background: rgba(184,132,42,0.16); border-color: var(--gold); }
@@ -371,28 +205,18 @@
     .btn-sm-navy:hover { background: var(--navy); color: #fff; }
     .sermon-dur { font-family: 'Cinzel', serif; font-size: 9.5px; letter-spacing: 0.12em; color: var(--text-dim); margin-left: auto; }
 
-    /* ============================================================
-       YOUTUBE
-    ============================================================ */
+    /* YOUTUBE */
     .yt-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
-
-    .yt-card {
-      background: var(--card-bg); border: 1px solid var(--card-border);
-      border-radius: 10px; overflow: hidden; display: flex; flex-direction: column;
-      transition: transform 0.4s, box-shadow 0.4s, border-color 0.4s;
-    }
+    .yt-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; transition: transform 0.4s, box-shadow 0.4s, border-color 0.4s; }
     .yt-card::before { content: ''; display: block; height: 3px; background: linear-gradient(90deg, var(--gold), var(--gold-lt)); }
     .yt-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-lg); border-color: var(--gold-border); }
-
     .yt-card-head { padding: 26px 26px 18px; display: flex; align-items: center; gap: 16px; }
     .yt-avatar { width: 58px; height: 58px; border-radius: 50%; background: var(--navy); border: 2px solid var(--gold-border); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
     .yt-avatar span { font-family: 'Cinzel', serif; font-size: 15px; font-weight: 700; color: var(--gold-lt); }
     .yt-channel-name { font-family: 'Cormorant Garamond', serif; font-size: 19px; font-weight: 700; color: var(--text-dark); line-height: 1.2; margin-bottom: 3px; }
     .yt-handle { font-family: 'Cinzel', serif; font-size: 9.5px; letter-spacing: 0.12em; color: var(--text-dim); text-transform: uppercase; }
-
     .yt-desc { padding: 0 26px 18px; font-size: 13.5px; font-weight: 300; color: var(--text-body); line-height: 1.75; flex: 1; }
     .yt-latest-label { margin: 0 26px 10px; font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--gold); }
-
     .yt-video-list { margin: 0 26px 22px; display: flex; flex-direction: column; gap: 8px; }
     .yt-video-row { display: flex; align-items: center; gap: 12px; padding: 10px 12px; background: var(--bg-parchment); border: 1px solid var(--card-border); border-radius: 8px; text-decoration: none; transition: background 0.25s, border-color 0.25s; }
     .yt-video-row:hover { background: var(--bg-linen); border-color: var(--gold-border); }
@@ -401,32 +225,25 @@
     .yt-video-row:hover .yt-play-btn { background: var(--gold); }
     .yt-video-row:hover .yt-play-btn svg { fill: #fff; }
     .yt-video-name { font-size: 13px; color: var(--text-dark); line-height: 1.4; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
     .yt-card-foot { padding: 16px 26px; border-top: 1px solid var(--card-border); display: flex; gap: 12px; }
     .btn-yt-primary { background: var(--navy); color: #fff; border-color: var(--navy); padding: 10px 18px; }
     .btn-yt-primary:hover { background: var(--navy-mid); border-color: var(--navy-mid); transform: translateY(-1px); box-shadow: var(--shadow-md); }
     .btn-yt-ghost { background: transparent; color: var(--gold); border-color: var(--gold-border); }
     .btn-yt-ghost:hover { border-color: var(--gold); background: rgba(184,132,42,0.06); }
 
-    /* ============================================================
-       BOOKS
-    ============================================================ */
+    /* BOOKS */
     .books-header { display: grid; grid-template-columns: 1fr auto; align-items: end; margin-bottom: 52px; gap: 40px; }
     .books-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 32px; max-width: 900px; margin: 0 auto; }
-
     .book-card { border-radius: 10px; overflow: hidden; background: var(--card-bg); border: 1px solid var(--card-border); display: flex; flex-direction: column; transition: transform 0.45s, box-shadow 0.45s; }
     .book-card:hover { transform: translateY(-8px); box-shadow: var(--shadow-lg); }
-
     .book-cover { position: relative; height: 270px; overflow: hidden; }
     .book-cover-bg { position: absolute; inset: 0; transition: transform 0.55s; will-change: transform; }
     .book-card:hover .book-cover-bg { transform: scale(1.04); }
     .bcb-1 { background: linear-gradient(160deg, #071228 0%, #0f2260 40%, #1a3a90 100%); }
     .bcb-2 { background: linear-gradient(160deg, #160508 0%, #3a1015 40%, #6e2020 100%); }
-    .bcb-3 { background: linear-gradient(160deg, #03100a 0%, #0c2e18 40%, #155530 100%); }
     .book-spine { position: absolute; top: 0; left: 0; bottom: 0; width: 5px; }
     .bs-1 { background: linear-gradient(180deg, var(--gold-lt), var(--gold)); }
     .bs-2 { background: linear-gradient(180deg, #f5e0c0, var(--gold-lt)); }
-    .bs-3 { background: linear-gradient(180deg, var(--gold-lt), var(--gold)); }
     .book-orn-t { position: absolute; left: 18px; right: 18px; top: 18px; height: 1px; background: linear-gradient(90deg, transparent, rgba(212,164,76,0.4), transparent); }
     .book-orn-b { position: absolute; left: 18px; right: 18px; bottom: 18px; height: 1px; background: linear-gradient(90deg, transparent, rgba(212,164,76,0.4), transparent); }
     .book-cross { position: absolute; top: 22px; right: 22px; opacity: 0.1; }
@@ -446,22 +263,12 @@
     .btn-book-ghost { background: transparent; color: var(--text-mid); border-color: var(--card-border); }
     .btn-book-ghost:hover { border-color: var(--gold); color: var(--gold); }
 
-    /* ============================================================
-       RESOURCES (PDF)
-    ============================================================ */
+    /* RESOURCES */
     .resources-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
-
-    .res-card {
-      background: var(--card-bg); border: 1px solid var(--card-border);
-      border-radius: 10px; padding: 26px 22px;
-      display: flex; flex-direction: column; gap: 12px;
-      position: relative; overflow: hidden;
-      transition: transform 0.35s, box-shadow 0.35s, border-color 0.35s;
-    }
+    .res-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 10px; padding: 26px 22px; display: flex; flex-direction: column; gap: 12px; position: relative; overflow: hidden; transition: transform 0.35s, box-shadow 0.35s, border-color 0.35s; }
     .res-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--gold), var(--gold-lt)); transform: scaleX(0); transform-origin: left; transition: transform 0.4s; }
     .res-card:hover::before { transform: scaleX(1); }
     .res-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); border-color: var(--gold-border); }
-
     .res-icon-wrap { width: 50px; height: 50px; border-radius: 10px; background: linear-gradient(135deg, var(--gold-pale), #eece7a); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
     .res-icon-wrap svg { width: 24px; height: 24px; stroke: var(--gold); fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
     .res-tag { font-family: 'Cinzel', serif; font-size: 8.5px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--gold); }
@@ -471,9 +278,7 @@
     .btn-dl { display: flex; align-items: center; justify-content: center; gap: 7px; padding: 10px 16px; border-radius: 6px; background: rgba(184,132,42,0.08); border: 1px solid rgba(184,132,42,0.25); color: var(--gold); font-family: 'Cinzel', serif; font-size: 9.5px; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 600; text-decoration: none; cursor: pointer; transition: all 0.3s; }
     .btn-dl:hover { background: var(--gold); color: #fff; border-color: var(--gold); }
 
-    /* ============================================================
-       DONATE / PAYMENT
-    ============================================================ */
+    /* DONATE */
     .pay-inner { max-width: 880px; margin: 0 auto; text-align: center; }
     .pay-tabs { display: flex; justify-content: center; gap: 8px; margin: 34px 0 42px; flex-wrap: wrap; }
     .tab-btn { font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 0.13em; text-transform: uppercase; padding: 10px 22px; border-radius: 30px; border: 1px solid var(--card-border); background: var(--card-bg); color: var(--text-body); cursor: pointer; transition: all 0.3s; }
@@ -481,7 +286,6 @@
     .pay-panel { display: none; text-align: left; }
     .pay-panel.active { display: block; }
     .pay-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; align-items: start; }
-
     .pay-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; overflow: hidden; transition: box-shadow 0.3s; }
     .pay-card:hover { box-shadow: var(--shadow-md); }
     .pay-card-head { padding: 22px 22px 16px; border-bottom: 1px solid var(--card-border); }
@@ -491,9 +295,6 @@
     .pay-badge { padding: 3px 9px; border-radius: 4px; font-size: 10px; font-weight: 700; letter-spacing: 0.04em; border: 1px solid; }
     .pb-mpesa  { background: #e8f7ef; color: #00a550; border-color: #b3e5cc; }
     .pb-coop   { background: #e8f7ef; color: #005a2f; border-color: #b3e5cc; }
-    .pb-visa   { background: #eef0f9; color: #1a1f71; border-color: #c0c5e8; }
-    .pb-mc     { background: #fff5ec; color: #eb6100; border-color: #f5cfb0; }
-
     .pay-body { padding: 20px 22px; display: flex; flex-direction: column; gap: 11px; }
     .pay-label { font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 4px; display: block; }
     .pay-field { display: flex; flex-direction: column; }
@@ -506,15 +307,7 @@
     .pay-notice { background: var(--bg-parchment); border: 1px solid var(--card-border); border-left: 3px solid var(--gold); border-radius: 6px; padding: 11px 14px; font-size: 12.5px; font-weight: 300; color: var(--text-body); line-height: 1.65; }
     .pp-or { display: flex; align-items: center; gap: 10px; font-size: 11.5px; color: var(--text-dim); }
     .pp-or::before, .pp-or::after { content: ''; flex: 1; height: 1px; background: var(--card-border); }
-    .amt-row { display: flex; gap: 8px; flex-wrap: wrap; }
-    .amt-btn { font-family: 'Cinzel', serif; font-size: 11px; font-weight: 600; padding: 8px 15px; border-radius: 6px; border: 1px solid var(--card-border); background: var(--card-bg); color: var(--text-mid); cursor: pointer; transition: all 0.25s; letter-spacing: 0.04em; }
-    .amt-btn:hover, .amt-btn.selected { background: var(--navy); color: #fff; border-color: var(--navy); }
-
-    /* Paybill display card */
-    .paybill-display {
-      background: linear-gradient(135deg, #003b1f 0%, #005a2f 100%);
-      border-radius: 12px; padding: 28px 30px 24px; margin-bottom: 0;
-    }
+    .paybill-display { background: linear-gradient(135deg, #003b1f 0%, #005a2f 100%); border-radius: 12px; padding: 28px 30px 24px; }
     .paybill-display-top { display: flex; align-items: center; gap: 14px; margin-bottom: 20px; }
     .paybill-coop-icon { width: 46px; height: 46px; background: #fff; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
     .paybill-coop-icon svg { width: 30px; height: 30px; }
@@ -527,8 +320,6 @@
     .paybill-divider { height: 1px; background: rgba(255,255,255,0.15); margin: 12px 0; }
     .paybill-price-note { font-size: 13px; color: rgba(255,255,255,0.7); line-height: 1.6; }
     .paybill-price-note strong { color: #7de0a0; }
-
-    /* Steps list */
     .steps-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 24px 26px; }
     .steps-heading { font-family: 'Cinzel', serif; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--navy); margin-bottom: 18px; display: flex; align-items: center; gap: 10px; }
     .steps-heading::after { content: ''; flex: 1; height: 1px; background: var(--card-border); }
@@ -542,9 +333,7 @@
     .confirm-box { background: var(--bg-parchment); border: 1px solid var(--card-border); border-left: 4px solid var(--gold); border-radius: 8px; padding: 13px 16px; font-size: 13px; color: var(--text-body); line-height: 1.7; margin-top: 16px; }
     .confirm-box strong { color: var(--text-dark); }
 
-    /* ============================================================
-       ABOUT STATS (navy band)
-    ============================================================ */
+    /* STATS */
     .verse-block { max-width: 760px; margin: 0 auto; text-align: center; margin-bottom: 60px; }
     .verse-quote { font-family: 'Cormorant Garamond', serif; font-size: clamp(22px, 3vw, 40px); font-weight: 300; font-style: italic; color: #fff; line-height: 1.55; margin-bottom: 20px; position: relative; }
     .verse-quote::before { content: '\201C'; position: absolute; top: -28px; left: 50%; transform: translateX(-50%); font-size: 80px; color: var(--gold-lt); opacity: 0.13; font-family: 'Cormorant Garamond', serif; line-height: 1; }
@@ -554,18 +343,14 @@
     .stat-num { font-family: 'Cormorant Garamond', serif; font-size: 50px; font-weight: 300; color: var(--gold-lt); line-height: 1; margin-bottom: 7px; }
     .stat-label { font-family: 'Cinzel', serif; font-size: 9.5px; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.45); }
 
-    /* ============================================================
-       CONTACT BAR
-    ============================================================ */
+    /* CONTACT */
     .contact-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; max-width: 820px; margin: 0 auto; }
     .contact-tile { display: flex; flex-direction: column; align-items: center; gap: 11px; padding: 28px 20px; background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 10px; text-decoration: none; text-align: center; transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s; }
     .contact-tile:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); border-color: var(--gold-border); }
     .contact-label { font-family: 'Cinzel', serif; font-size: 10.5px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dark); }
     .contact-detail { font-size: 12px; color: var(--text-dim); font-weight: 300; }
 
-    /* ============================================================
-       FOOTER
-    ============================================================ */
+    /* FOOTER */
     footer { background: var(--navy); border-top: 1px solid rgba(255,255,255,0.06); padding: 60px 60px 34px; }
     .footer-inner { max-width: 1280px; margin: 0 auto; }
     .footer-top { display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr; gap: 48px; margin-bottom: 48px; }
@@ -580,18 +365,14 @@
     .footer-socials a { width: 32px; height: 32px; border-radius: 3px; border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.38); text-decoration: none; transition: all 0.3s; }
     .footer-socials a:hover { border-color: var(--gold-lt); color: var(--gold-lt); }
 
-    /* ============================================================
-       SCROLL REVEAL
-    ============================================================ */
+    /* REVEAL */
     .reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.8s ease, transform 0.8s ease; }
     .reveal.visible { opacity: 1; transform: translateY(0); }
     .d1 { transition-delay: 0.10s; }
     .d2 { transition-delay: 0.20s; }
     .d3 { transition-delay: 0.30s; }
 
-    /* ============================================================
-       RESPONSIVE
-    ============================================================ */
+    /* RESPONSIVE */
     @media (max-width: 1100px) {
       nav, nav.scrolled { padding-left: 24px; padding-right: 24px; }
       .nav-links { display: none; }
@@ -643,7 +424,7 @@
 </head>
 <body>
 
-  <!-- ── MOBILE MENU ─────────────────────────────── -->
+  <!-- MOBILE MENU -->
   <div class="mm-backdrop" id="mmBackdrop"></div>
   <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
     <div class="mm-header">
@@ -655,17 +436,16 @@
       </button>
     </div>
     <div class="mm-nav">
-      <a href="#ministry"  id="mm-l1">Ministry</a>
-      <a href="#sermons"   id="mm-l2">Sermons</a>
-      <a href="#youtube"   id="mm-l3">YouTube</a>
-      <a href="#books"     id="mm-l4">Books</a>
-      <a href="#resources" id="mm-l5">Resources</a>
-      <a href="#donate"    id="mm-l6" class="mm-donate">Donate</a>
+      <a href="#ministry">Ministry</a>
+      <a href="#sermons">Sermons</a>
+      <a href="#youtube">YouTube</a>
+      <a href="#books">Books</a>
+      <a href="#resources">Resources</a>
+      <a href="#donate" class="mm-donate">Donate</a>
     </div>
-    <div class="mm-footer" style="display:none;"></div>
   </div>
 
-  <!-- ── NAV ──────────────────────────────────────── -->
+  <!-- NAV -->
   <nav id="navbar">
     <a href="#" class="logo">
       <div class="logo-mark">
@@ -694,7 +474,7 @@
     </button>
   </nav>
 
-  <!-- ── HERO ──────────────────────────────────────── -->
+  <!-- HERO -->
   <section id="hero">
     <div class="hero-bg"></div>
     <div class="light-rays">
@@ -708,9 +488,9 @@
     </div>
     <div class="hero-content">
       <div class="hero-eyebrow">Peter Milimo — Ministry &amp; Leadership</div>
-      <h1 class="hero-title"><em>Transforming Lives</em><span class="line2">Through Biblical Truth</span></h1>
-      <p class="hero-verse">Strong Marriages. Christian Leadership. Spiritual Awakening. Youth Empowerment. A ministry dedicated to restoring families and equipping communities.</p>
-      <p class="hero-ref">www.petermilimo.org</p>
+      <h1 class="hero-title"><em>{site.heroTitle}</em><span class="line2">{site.heroSubtitle}</span></h1>
+      <p class="hero-verse">{site.heroVerse}</p>
+      <p class="hero-ref">{site.heroRef}</p>
       <div class="hero-actions">
         <a href="#sermons" class="btn-primary">Check Sermons</a>
         <a href="#books" class="btn-outline">Browse Books</a>
@@ -721,65 +501,44 @@
     </div>
   </section>
 
-  <!-- ── MINISTRY PILLARS ──────────────────────────── -->
+  <!-- MINISTRY PILLARS -->
   <div style="background:var(--bg-cream);">
     <div class="section-wrap" id="ministry">
       <div class="intro-grid">
         <div class="intro-left reveal">
           <div class="eyebrow">Welcome</div>
           <h2 class="section-title">Restoring Families.<br><em>Equipping Communities.</em></h2>
-          <p class="section-sub">Welcome to the official ministry and leadership platform of Peter Milimo — a place dedicated to restoring families, strengthening faith, equipping communities, and raising a generation grounded in biblical truth and practical skills.</p>
-          <p class="section-sub" style="margin-top:14px;color:var(--text-dim);font-size:15px;">Through biblical teaching, marriage mentorship, Christian leadership, books, and technical empowerment programs, this ministry exists to bring healing, spiritual awakening, and transformation to individuals, families, churches, and communities.</p>
+          <p class="section-sub">{site.ministryIntro}</p>
+          <p class="section-sub" style="margin-top:14px;color:var(--text-dim);font-size:15px;">{site.ministryBody}</p>
           <div style="margin-top:30px;"><a href="#about" class="btn-ghost">Our Story &amp; Mission</a></div>
         </div>
         <div class="intro-right reveal d1">
-
           <div class="pillar-card">
-            <div class="pillar-icon-wrap">
-              <div class="icon-tile">
-                <svg viewBox="0 0 24 24"><circle cx="8" cy="12" r="5"/><circle cx="16" cy="12" r="5"/><path d="M11 12h2"/></svg>
-              </div>
-            </div>
+            <div class="pillar-icon-wrap"><div class="icon-tile"><svg viewBox="0 0 24 24"><circle cx="8" cy="12" r="5"/><circle cx="16" cy="12" r="5"/><path d="M11 12h2"/></svg></div></div>
             <div class="pillar-title">Marriage Restoration</div>
             <p class="pillar-desc">Healing broken marriages and equipping couples to build God-centred homes that thrive.</p>
           </div>
-
           <div class="pillar-card">
-            <div class="pillar-icon-wrap">
-              <div class="icon-tile">
-                <svg viewBox="0 0 24 24"><line x1="12" y1="3" x2="12" y2="21"/><line x1="5" y1="9" x2="19" y2="9"/></svg>
-              </div>
-            </div>
+            <div class="pillar-icon-wrap"><div class="icon-tile"><svg viewBox="0 0 24 24"><line x1="12" y1="3" x2="12" y2="21"/><line x1="5" y1="9" x2="19" y2="9"/></svg></div></div>
             <div class="pillar-title">Christian Leadership</div>
             <p class="pillar-desc">Raising servant leaders who govern with integrity and deep biblical wisdom.</p>
           </div>
-
           <div class="pillar-card">
-            <div class="pillar-icon-wrap">
-              <div class="icon-tile">
-                <svg viewBox="0 0 24 24"><path d="M12 2c0 0-4 4-4 9a4 4 0 0 0 8 0c0-5-4-9-4-9z"/><path d="M12 12c0 0-2 2-2 4a2 2 0 0 0 4 0c0-2-2-4-2-4z"/></svg>
-              </div>
-            </div>
+            <div class="pillar-icon-wrap"><div class="icon-tile"><svg viewBox="0 0 24 24"><path d="M12 2c0 0-4 4-4 9a4 4 0 0 0 8 0c0-5-4-9-4-9z"/><path d="M12 12c0 0-2 2-2 4a2 2 0 0 0 4 0c0-2-2-4-2-4z"/></svg></div></div>
             <div class="pillar-title">Spiritual Awakening</div>
             <p class="pillar-desc">Igniting a deep hunger for God through prayer, the Word, and revival fire.</p>
           </div>
-
           <div class="pillar-card">
-            <div class="pillar-icon-wrap">
-              <div class="icon-tile">
-                <svg viewBox="0 0 24 24"><path d="M12 22V12"/><path d="M12 12C12 7 7 4 3 6c3 1 6 3 9 6z"/><path d="M12 12c0-5 5-8 9-6-3 1-6 3-9 6z"/></svg>
-              </div>
-            </div>
+            <div class="pillar-icon-wrap"><div class="icon-tile"><svg viewBox="0 0 24 24"><path d="M12 22V12"/><path d="M12 12C12 7 7 4 3 6c3 1 6 3 9 6z"/><path d="M12 12c0-5 5-8 9-6-3 1-6 3-9 6z"/></svg></div></div>
             <div class="pillar-title">Youth Empowerment</div>
             <p class="pillar-desc">Building a generation rooted in biblical truth, purpose, and practical skills.</p>
           </div>
-
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ── SERMONS ───────────────────────────────────── -->
+  <!-- SERMONS -->
   <div style="background:var(--bg-parchment);">
     <div class="section-wrap" id="sermons">
       <div class="sermons-header">
@@ -789,21 +548,53 @@
         </div>
         <p class="section-sub">Biblical messages on marriage, leadership, spiritual growth, and youth empowerment — delivered by Peter Milimo.</p>
       </div>
-      <div class="sermons-list" id="sermonsGrid"></div>
+      <div class="sermons-list">
+        {sermons.map((s, i) => {
+          const bgs = ['spb-1','spb-2','spb-3'];
+          return (
+            <div class={`sermon-card reveal d${(i % 3) + 1}`}>
+              <div class="sermon-panel">
+                <div class={`sermon-panel-bg ${bgs[i % 3]}`}></div>
+                <div class="sermon-cross">
+                  <svg width="72" height="90" viewBox="0 0 72 90" fill="none">
+                    <rect x="30" y="0" width="12" height="90" rx="4" fill="white"/>
+                    <rect x="0" y="26" width="72" height="12" rx="4" fill="white"/>
+                  </svg>
+                </div>
+                <div class="sermon-tag">{s.category}</div>
+                <div class="sermon-verse">{s.verse}</div>
+              </div>
+              <div class="sermon-body">
+                <div>
+                  <div class="sermon-date">{s.date}</div>
+                  <div class="sermon-title">{s.title}</div>
+                  <div class="sermon-speaker">{s.speaker}</div>
+                  <p class="sermon-excerpt">{s.excerpt}</p>
+                </div>
+                <div class="sermon-actions">
+                  {s.youtubeUrl
+                    ? <a href={s.youtubeUrl} target="_blank" class="btn-sm btn-sm-gold">▶ Watch</a>
+                    : <span class="btn-sm btn-sm-gold" style="opacity:0.5;cursor:default;">Coming Soon</span>
+                  }
+                  <span class="sermon-dur">{s.duration}</span>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
     </div>
   </div>
 
-  <!-- ── YOUTUBE ───────────────────────────────────── -->
+  <!-- YOUTUBE -->
   <div style="background:var(--bg-white);">
     <div class="section-wrap" id="youtube">
       <div style="margin-bottom:50px;">
         <div class="eyebrow">Watch &amp; Subscribe</div>
         <h2 class="section-title">Our YouTube <em>Channels</em></h2>
-        <p class="section-sub" style="margin-top:10px;">Sermons, marriage teachings, and discipleship content — free to watch anytime. Subscribe and never miss a new message.</p>
+        <p class="section-sub" style="margin-top:10px;">Sermons, marriage teachings, and discipleship content — free to watch anytime.</p>
       </div>
       <div class="yt-grid">
-
-        <!-- Channel 1 -->
         <div class="yt-card reveal">
           <div class="yt-card-head">
             <div class="yt-avatar"><span>BB</span></div>
@@ -812,7 +603,7 @@
               <div class="yt-handle">@biblebelieverschristchurch</div>
             </div>
           </div>
-          <p class="yt-desc">Powerful biblical teachings, Sunday services, revival messages, and Christian leadership content. Rooted in the Word — transforming lives through the truth of the gospel.</p>
+          <p class="yt-desc">Powerful biblical teachings, Sunday services, revival messages, and Christian leadership content.</p>
           <div class="yt-latest-label">Recent Messages</div>
           <div class="yt-video-list">
             <a href="https://www.youtube.com/watch?v=ieBcKgzSwIw" target="_blank" class="yt-video-row">
@@ -836,8 +627,6 @@
             <a href="https://youtube.com/@biblebelieverschristchurch?si=ovKptXMH-4ZL1Ryt" target="_blank" class="btn-sm btn-yt-ghost">View Channel</a>
           </div>
         </div>
-
-        <!-- Channel 2 -->
         <div class="yt-card reveal d1">
           <div class="yt-card-head">
             <div class="yt-avatar"><span>UM</span></div>
@@ -846,12 +635,12 @@
               <div class="yt-handle">@unshakablemarriage</div>
             </div>
           </div>
-          <p class="yt-desc">Practical marriage wisdom grounded in Scripture — covering communication, intimacy, conflict resolution, restoration, and building a covenant marriage that stands the test of time.</p>
+          <p class="yt-desc">Practical marriage wisdom grounded in Scripture — communication, intimacy, conflict resolution, and restoration.</p>
           <div class="yt-latest-label">Recent Teachings</div>
           <div class="yt-video-list">
             <a href="https://www.youtube.com/watch?v=3nPob6537t0" target="_blank" class="yt-video-row">
               <div class="yt-play-btn"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div>
-              <span class="yt-video-name">WHY FAMILIMES ARE SHAKING</span>
+              <span class="yt-video-name">WHY FAMILIES ARE SHAKING</span>
             </a>
             <a href="https://www.youtube.com/watch?v=NeN3EjUrhFo" target="_blank" class="yt-video-row">
               <div class="yt-play-btn"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div>
@@ -859,7 +648,7 @@
             </a>
             <a href="https://www.youtube.com/watch?v=5MUBEv9-gnEs" target="_blank" class="yt-video-row">
               <div class="yt-play-btn"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div>
-              <span class="yt-video-name">WHY BAPTISIM MATTERS</span>
+              <span class="yt-video-name">WHY BAPTISM MATTERS</span>
             </a>
           </div>
           <div class="yt-card-foot">
@@ -870,27 +659,65 @@
             <a href="https://youtube.com/@unshakablemarriage?si=Cn3JYlXVq88twr9q" target="_blank" class="btn-sm btn-yt-ghost">View Channel</a>
           </div>
         </div>
-
       </div>
     </div>
   </div>
 
-  <!-- ── BOOKS ─────────────────────────────────────── -->
+  <!-- BOOKS -->
   <div style="background:var(--bg-linen);">
     <div class="section-wrap" id="books">
       <div class="books-header">
         <div>
           <div class="eyebrow">Kingdom Resources</div>
           <h2 class="section-title">Books by <em>Peter Milimo</em></h2>
-          <p class="section-sub" style="margin-top:10px;">Both books are available as softcopy (PDF / eBook) at <strong>KSh 1,200</strong> each. Pay via M-Pesa Paybill and receive your copy by email.</p>
+          <p class="section-sub" style="margin-top:10px;">Both books are available as softcopy (PDF / eBook) at <strong>{site.bookPrice}</strong> each. Pay via M-Pesa Paybill and receive your copy by email.</p>
         </div>
         <a href="#donate" class="btn-ghost">Order &amp; Pay</a>
       </div>
-      <div class="books-grid" id="booksGrid"></div>
+      <div class="books-grid">
+        {books.map((b, i) => {
+          const bgs    = ['bcb-1','bcb-2'];
+          const spines = ['bs-1','bs-2'];
+          return (
+            <div class={`book-card reveal d${i + 1}`}>
+              <div class="book-cover">
+                <div class={`book-cover-bg ${bgs[i % 2]}`}></div>
+                <div class={`book-spine ${spines[i % 2]}`}></div>
+                <div class="book-orn-t"></div>
+                <div class="book-orn-b"></div>
+                <div class="book-cross">
+                  <svg width="52" height="65" viewBox="0 0 52 65" fill="none">
+                    <rect x="21" y="0" width="10" height="65" rx="3" fill="white"/>
+                    <rect x="0" y="17" width="52" height="10" rx="3" fill="white"/>
+                  </svg>
+                </div>
+                <div class="book-price-tag">{b.price}</div>
+                <div class="book-cover-text">
+                  <div class="book-cat">{b.cat}</div>
+                  <div class="book-cover-title">{b.title}</div>
+                  <div class="book-cover-subtitle">{b.sub}</div>
+                  <div class="book-cover-author">{b.author}</div>
+                </div>
+              </div>
+              <div class="book-body">
+                <div class="book-format-badge">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                  {b.format}
+                </div>
+                <p class="book-desc">{b.desc}</p>
+                <div class="book-btns">
+                  <a href="#donate" class="btn-book btn-book-gold">Buy Softcopy</a>
+                  <a href={`mailto:${site.email}`} class="btn-book btn-book-ghost">Email to Order</a>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
     </div>
   </div>
 
-  <!-- ── RESOURCES ─────────────────────────────────── -->
+  <!-- RESOURCES -->
   <div style="background:var(--bg-parchment);">
     <div class="section-wrap" id="resources">
       <div style="margin-bottom:50px;">
@@ -898,36 +725,46 @@
         <h2 class="section-title">Resource <em>Library</em></h2>
         <p class="section-sub" style="margin-top:10px;">Downloadable PDF guides, study notes, devotionals, and teaching materials — freely available to support your walk with God.</p>
       </div>
-      <div class="resources-grid" id="resourcesGrid"></div>
+      <div class="resources-grid">
+        {resources.map((r, i) => (
+          <div class={`res-card reveal d${(i % 3) + 1}`}>
+            <div class="res-icon-wrap">
+              <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            </div>
+            <div class="res-tag">{r.tag}</div>
+            <div class="res-title">{r.title}</div>
+            <p class="res-desc">{r.desc}</p>
+            <div class="res-meta"><span>📄 {r.pages}</span><span>💾 {r.size}</span></div>
+            {r.url && r.url !== '#' && (
+              <a href={r.url} class="btn-dl" download>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Download Free
+              </a>
+            )}
+          </div>
+        ))}
+      </div>
     </div>
   </div>
 
-  <!-- ── DONATE ─────────────────────────────────────── -->
+  <!-- DONATE -->
   <div style="background:var(--bg-blush);">
     <div class="section-wrap" id="donate">
       <div class="pay-inner">
         <div class="eyebrow center reveal">Support the Ministry</div>
         <h2 class="section-title reveal" style="text-align:center;margin-bottom:10px;">Give &amp; <em>Purchase Securely</em></h2>
         <p class="section-sub reveal" style="margin:0 auto;text-align:center;">Purchase a book via M-Pesa Paybill, or support the ministry with a donation through PayPal.</p>
-
         <div class="pay-tabs">
           <button class="tab-btn active" onclick="switchTab('mpesa',this)">Buy a Book — M-Pesa</button>
           <button class="tab-btn" onclick="switchTab('donation',this)">Donation — PayPal</button>
         </div>
-
-        <!-- ── M-PESA / BOOK PURCHASE PANEL ── -->
         <div class="pay-panel active" id="panel-mpesa">
           <div class="pay-cols">
-
-            <!-- Left: Paybill card -->
             <div class="reveal">
               <div class="paybill-display">
                 <div class="paybill-display-top">
                   <div class="paybill-coop-icon">
-                    <svg viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <circle cx="22" cy="22" r="20" fill="#005a2f"/>
-                      <path d="M31 16a12 12 0 1 0 0 12" stroke="#fff" stroke-width="3.5" stroke-linecap="round" fill="none"/>
-                    </svg>
+                    <svg viewBox="0 0 44 44" fill="none"><circle cx="22" cy="22" r="20" fill="#005a2f"/><path d="M31 16a12 12 0 1 0 0 12" stroke="#fff" stroke-width="3.5" stroke-linecap="round" fill="none"/></svg>
                   </div>
                   <div>
                     <div class="paybill-bank-label">Co-operative Bank</div>
@@ -936,95 +773,54 @@
                 </div>
                 <div class="paybill-row">
                   <span class="paybill-lbl">Paybill Number</span>
-                  <span class="paybill-val">400200</span>
+                  <span class="paybill-val">{site.paybillNumber}</span>
                 </div>
                 <div class="paybill-divider"></div>
                 <div class="paybill-row">
                   <span class="paybill-lbl">Account Number</span>
-                  <span class="paybill-val-sm">1169454</span>
+                  <span class="paybill-val-sm">{site.accountNumber}</span>
                 </div>
                 <div class="paybill-divider"></div>
                 <div class="paybill-row">
                   <span class="paybill-lbl">Account Name</span>
-                  <span class="paybill-val-sm">Peter M. Kisianganі</span>
+                  <span class="paybill-val-sm">{site.accountName}</span>
                 </div>
                 <div class="paybill-divider"></div>
-                <div class="paybill-price-note">
-                  Books: <strong>KSh 1,200 per copy</strong><br>
-                  Donations: any amount you choose
-                </div>
+                <div class="paybill-price-note">Books: <strong>{site.bookPrice} per copy</strong><br>Donations: any amount you choose</div>
               </div>
-
               <div class="confirm-box" style="margin-top:16px;">
-                <strong>After paying:</strong> Send your M-Pesa confirmation code, your name, and the book title to <strong>biblebcc@gmail.com</strong> or message us on Facebook. We will send your softcopy (PDF) by email promptly.
+                <strong>After paying:</strong> Send your M-Pesa confirmation code, your name, and the book title to <strong>{site.email}</strong> or message us on Facebook. We will send your softcopy (PDF) by email promptly.
               </div>
             </div>
-
-            <!-- Right: Step-by-step guide -->
             <div class="reveal d1">
               <div class="steps-card">
                 <div class="steps-heading">How to Pay via M-Pesa</div>
                 <div>
-                  <div class="step-row">
-                    <div class="step-num">1</div>
-                    <div class="step-text">
-                      <div class="step-action">Open M-Pesa on your phone</div>
-                      <div class="step-desc">Go to the M-Pesa menu on your Safaricom line.</div>
+                  {[
+                    { action: 'Open M-Pesa on your phone', desc: 'Go to the M-Pesa menu on your Safaricom line.' },
+                    { action: 'Select "Lipa Na M-Pesa"', desc: 'Then choose Pay Bill.' },
+                    { action: 'Enter Business Number', code: site.paybillNumber },
+                    { action: 'Enter Account Number', code: site.accountNumber },
+                    { action: 'Enter Amount', desc: `${site.bookPrice} per book. For donations, enter any amount.` },
+                    { action: 'Enter M-Pesa PIN & Confirm', desc: 'You will receive an SMS confirmation from Safaricom.' },
+                    { action: 'Send Us Your Confirmation', desc: `Share the M-Pesa code + your name + book title to ${site.email}.` },
+                  ].map((step, idx) => (
+                    <div class="step-row">
+                      <div class="step-num">{idx + 1}</div>
+                      <div class="step-text">
+                        <div class="step-action">{step.action}</div>
+                        {step.desc && <div class="step-desc">{step.desc}</div>}
+                        {step.code && <span class="step-code">{step.code}</span>}
+                      </div>
                     </div>
-                  </div>
-                  <div class="step-row">
-                    <div class="step-num">2</div>
-                    <div class="step-text">
-                      <div class="step-action">Select "Lipa Na M-Pesa"</div>
-                      <div class="step-desc">Then choose <strong>Pay Bill</strong>.</div>
-                    </div>
-                  </div>
-                  <div class="step-row">
-                    <div class="step-num">3</div>
-                    <div class="step-text">
-                      <div class="step-action">Enter Business Number</div>
-                      <div class="step-code">400200</div>
-                    </div>
-                  </div>
-                  <div class="step-row">
-                    <div class="step-num">4</div>
-                    <div class="step-text">
-                      <div class="step-action">Enter Account Number</div>
-                      <div class="step-code">1169454</div>
-                    </div>
-                  </div>
-                  <div class="step-row">
-                    <div class="step-num">5</div>
-                    <div class="step-text">
-                      <div class="step-action">Enter Amount</div>
-                      <div class="step-desc">KSh 1,200 per book. For donations, enter any amount.</div>
-                    </div>
-                  </div>
-                  <div class="step-row">
-                    <div class="step-num">6</div>
-                    <div class="step-text">
-                      <div class="step-action">Enter M-Pesa PIN &amp; Confirm</div>
-                      <div class="step-desc">You will receive an SMS confirmation from Safaricom.</div>
-                    </div>
-                  </div>
-                  <div class="step-row">
-                    <div class="step-num">7</div>
-                    <div class="step-text">
-                      <div class="step-action">Send Us Your Confirmation</div>
-                      <div class="step-desc">Share the M-Pesa code + your name + delivery address so we can process your order.</div>
-                    </div>
-                  </div>
+                  ))}
                 </div>
               </div>
             </div>
-
           </div>
-        </div><!-- /panel-mpesa -->
-
-        <!-- ── DONATION / PAYPAL PANEL ── (unchanged from original) -->
+        </div>
         <div class="pay-panel" id="panel-donation">
           <div class="pay-cols">
-
             <div class="pay-card reveal">
               <div class="pay-card-head">
                 <div class="pay-card-title">Mobile Money &amp; Card</div>
@@ -1035,14 +831,10 @@
                 </div>
               </div>
               <div class="pay-body">
-                <div class="pay-notice">
-                  Use the <strong>M-Pesa Paybill</strong> tab above to send a donation of any amount.<br><br>
-                  Paybill: <strong>400200</strong> &nbsp;|&nbsp; Account: <strong>1169454</strong>
-                </div>
-                <a href="#donate" onclick="switchTab('mpesa', document.querySelectorAll('.tab-btn')[0])" class="pay-submit" style="display:block;text-align:center;text-decoration:none;line-height:2;">View M-Pesa Instructions &rarr;</a>
+                <div class="pay-notice">Use the <strong>M-Pesa Paybill</strong> tab above to send a donation of any amount.<br><br>Paybill: <strong>{site.paybillNumber}</strong> &nbsp;|&nbsp; Account: <strong>{site.accountNumber}</strong></div>
+                <a href="#donate" onclick="switchTab('mpesa', document.querySelectorAll('.tab-btn')[0])" class="pay-submit" style="display:block;text-align:center;text-decoration:none;line-height:2;">View M-Pesa Instructions →</a>
               </div>
             </div>
-
             <div class="pay-card reveal d1">
               <div class="pay-card-head">
                 <div style="margin-bottom:5px;">
@@ -1062,35 +854,20 @@
                   <label class="pay-label">Your Name (optional)</label>
                   <input class="pay-input" type="text" placeholder="Your name"/>
                 </div>
-                <div class="pay-field">
-                  <label class="pay-label">Message (optional)</label>
-                  <input class="pay-input" type="text" placeholder="e.g. Keep up the ministry!"/>
-                </div>
                 <a href="https://www.paypal.com/ncp/payment/JT6CLQWZJ46DQ" target="_blank" rel="noopener noreferrer">
-                  <button class="pay-submit pay-submit-pp" style="width:100%;">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="white" style="vertical-align:middle;margin-right:6px;">
-                      <path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944.901C5.026.382 5.474 0 5.998 0h7.46c2.57 0 4.578.543 5.69 1.81 1.01 1.15 1.304 2.42 1.012 4.287-.983 5.05-4.349 6.797-8.647 6.797h-2.19c-.524 0-.968.382-1.05.9l-1.12 7.106zm14.146-14.42a3.35 3.35 0 0 0-.607-.541c-.59 3.025-2.566 6.082-8.558 6.082H9.825l-1.343 8.5h3.52c.524 0 .967-.382 1.049-.9l.837-5.305.054-.291c.082-.518.526-.9 1.05-.9h.66c4.298 0 7.664-1.747 8.647-6.797.41-2.107.198-3.867-.12-5.024z"/>
-                    </svg>
-                    Donate via PayPal
-                  </button>
+                  <button class="pay-submit pay-submit-pp" style="width:100%;">Donate via PayPal</button>
                 </a>
                 <div class="pp-or">or send directly to</div>
-                <div class="pay-notice"><strong>biblebcc@gmail.com</strong> — Send your PayPal donation here and include "Ministry Gift" in the notes.</div>
-                <p class="pay-secure">
-                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                  PayPal Buyer Protection · Encrypted
-                </p>
+                <div class="pay-notice"><strong>{site.paypalEmail}</strong> — Send your PayPal donation here and include "Ministry Gift" in the notes.</div>
               </div>
             </div>
-
           </div>
-        </div><!-- /panel-donation -->
-
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- ── ABOUT STATS ────────────────────────────────── -->
+  <!-- STATS -->
   <div style="background:var(--bg-navy);">
     <div class="section-wrap" id="about">
       <div class="verse-block reveal">
@@ -1099,14 +876,14 @@
         <p class="verse-ref">Peter Milimo — petermilimo.org</p>
       </div>
       <div class="stats-grid reveal">
-        <div class="stat-cell"><div class="stat-num">10+</div><div class="stat-label">Years of Ministry</div></div>
-        <div class="stat-cell"><div class="stat-num">1K+</div><div class="stat-label">Families Restored</div></div>
-        <div class="stat-cell"><div class="stat-num">4</div><div class="stat-label">Ministry Pillars</div></div>
+        <div class="stat-cell"><div class="stat-num">{site.statYears}</div><div class="stat-label">Years of Ministry</div></div>
+        <div class="stat-cell"><div class="stat-num">{site.statFamilies}</div><div class="stat-label">Families Restored</div></div>
+        <div class="stat-cell"><div class="stat-num">{site.statPillars}</div><div class="stat-label">Ministry Pillars</div></div>
       </div>
     </div>
   </div>
 
-  <!-- ── CONTACT BAR ────────────────────────────────── -->
+  <!-- CONTACT -->
   <div style="background:var(--bg-warm-mist);">
     <div class="section-wrap" id="connect" style="padding-top:72px;padding-bottom:72px;">
       <div style="text-align:center;margin-bottom:44px;" class="reveal">
@@ -1115,48 +892,33 @@
         <p class="section-sub" style="margin:12px auto 0;text-align:center;">For speaking engagements, marriage counselling, ministry partnerships, or book enquiries — reach out through any channel below.</p>
       </div>
       <div class="contact-grid reveal d1">
-
-        <a href="https://web.facebook.com/people/Life-Principles-with-Peter-Milimo/61590553761890/?rdid=fmL8IUONYOVooBWD&share_url=https%3A%2F%2Fweb.facebook.com%2Fshare%2F1HAGGD3H6e%2F%3F_rdc%3D1%26_rdr" target="_blank" class="contact-tile">
-          <div class="icon-tile">
-            <svg viewBox="0 0 24 24" fill="var(--gold-lt)" stroke="none"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-          </div>
+        <a href={site.facebookUrl} target="_blank" class="contact-tile">
+          <div class="icon-tile"><svg viewBox="0 0 24 24" fill="var(--gold-lt)" stroke="none"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></div>
           <div class="contact-label">Facebook</div>
           <div class="contact-detail">Follow &amp; Message</div>
         </a>
-
-        <a href="https://youtube.com/@biblebelieverschristchurch?si=ovKptXMH-4ZL1Ryt" target="_blank" class="contact-tile">
-          <div class="icon-tile">
-            <svg viewBox="0 0 24 17" fill="var(--gold-lt)" stroke="none"><path d="M23.495 6.205a3.007 3.007 0 0 0-2.088-2.088c-1.87-.501-9.396-.501-9.396-.501s-7.507-.01-9.396.501A3.007 3.007 0 0 0 .527 6.205a31.247 31.247 0 0 0-.522 5.805 31.247 31.247 0 0 0 .522 5.783 3.007 3.007 0 0 0 2.088 2.088c1.868.502 9.396.502 9.396.502s7.506 0 9.396-.502a3.007 3.007 0 0 0 2.088-2.088 31.247 31.247 0 0 0 .5-5.783 31.247 31.247 0 0 0-.5-5.805zM9.609 15.601V8.408l6.264 3.602z"/></svg>
-          </div>
+        <a href={site.youtubeMainUrl} target="_blank" class="contact-tile">
+          <div class="icon-tile"><svg viewBox="0 0 24 17" fill="var(--gold-lt)" stroke="none"><path d="M23.495 6.205a3.007 3.007 0 0 0-2.088-2.088c-1.87-.501-9.396-.501-9.396-.501s-7.507-.01-9.396.501A3.007 3.007 0 0 0 .527 6.205a31.247 31.247 0 0 0-.522 5.805 31.247 31.247 0 0 0 .522 5.783 3.007 3.007 0 0 0 2.088 2.088c1.868.502 9.396.502 9.396.502s7.506 0 9.396-.502a3.007 3.007 0 0 0 2.088-2.088 31.247 31.247 0 0 0 .5-5.783 31.247 31.247 0 0 0-.5-5.805zM9.609 15.601V8.408l6.264 3.602z"/></svg></div>
           <div class="contact-label">YouTube</div>
           <div class="contact-detail">Watch &amp; Subscribe</div>
         </a>
-
-        <a href="mailto:biblebcc@gmail.com" class="contact-tile">
-          <div class="icon-tile">
-            <svg viewBox="0 0 24 24" fill="none" stroke="var(--gold-lt)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-          </div>
+        <a href={`mailto:${site.email}`} class="contact-tile">
+          <div class="icon-tile"><svg viewBox="0 0 24 24" fill="none" stroke="var(--gold-lt)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
           <div class="contact-label">Email</div>
-          <div class="contact-detail">biblebcc@gmail.com</div>
+          <div class="contact-detail">{site.email}</div>
         </a>
-
       </div>
     </div>
   </div>
 
-  <!-- ── FOOTER ─────────────────────────────────────── -->
+  <!-- FOOTER -->
   <footer>
     <div class="footer-inner">
       <div class="footer-top">
         <div>
           <a href="#" class="logo">
-            <div class="logo-mark">
-              <svg viewBox="0 0 44 44" fill="none"><circle cx="22" cy="22" r="21" stroke="#d4a44c" stroke-width="1.2" opacity="0.5"/><rect x="20" y="8" width="4" height="28" rx="2" fill="#d4a44c"/><rect x="10" y="16" width="24" height="4" rx="2" fill="#d4a44c"/></svg>
-            </div>
-            <div class="logo-text">
-              <span class="logo-name">Peter Milimo</span>
-              <span class="logo-sub">Ministry & Leadership</span>
-            </div>
+            <div class="logo-mark"><svg viewBox="0 0 44 44" fill="none"><circle cx="22" cy="22" r="21" stroke="#d4a44c" stroke-width="1.2" opacity="0.5"/><rect x="20" y="8" width="4" height="28" rx="2" fill="#d4a44c"/><rect x="10" y="16" width="24" height="4" rx="2" fill="#d4a44c"/></svg></div>
+            <div class="logo-text"><span class="logo-name">Peter Milimo</span><span class="logo-sub">Ministry & Leadership</span></div>
           </a>
           <p class="footer-brand-text">Transforming lives through biblical truth, strong marriages, and practical empowerment. petermilimo.org</p>
         </div>
@@ -1182,9 +944,9 @@
         <div class="footer-col">
           <div class="footer-col-title">Connect</div>
           <ul>
-            <li><a href="https://web.facebook.com/people/Life-Principles-with-Peter-Milimo/61590553761890/?rdid=fmL8IUONYOVooBWD&share_url=https%3A%2F%2Fweb.facebook.com%2Fshare%2F1HAGGD3H6e%2F%3F_rdc%3D1%26_rdr" target="_blank">Facebook</a></li>
-            <li><a href="https://youtube.com/@biblebelieverschristchurch?si=ovKptXMH-4ZL1Ryt" target="_blank">YouTube</a></li>
-            <li><a href="mailto:biblebcc@gmail.com">Email Us</a></li>
+            <li><a href={site.facebookUrl} target="_blank">Facebook</a></li>
+            <li><a href={site.youtubeMainUrl} target="_blank">YouTube</a></li>
+            <li><a href={`mailto:${site.email}`}>Email Us</a></li>
             <li><a href="https://www.petermilimo.org" target="_blank">petermilimo.org</a></li>
           </ul>
         </div>
@@ -1192,237 +954,52 @@
       <div class="footer-bottom">
         <p class="footer-copy">© 2025 Peter Milimo Ministry &amp; Leadership. All rights reserved. | petermilimo.org</p>
         <div class="footer-socials">
-          <a href="https://facebook.com/petermilimo" target="_blank" aria-label="Facebook">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-          </a>
-          <a href="https://youtube.com/@biblebelieverschristchurch?si=ovKptXMH-4ZL1Ryt" target="_blank" aria-label="YouTube">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M23.495 6.205a3.007 3.007 0 0 0-2.088-2.088c-1.87-.501-9.396-.501-9.396-.501s-7.507-.01-9.396.501A3.007 3.007 0 0 0 .527 6.205a31.247 31.247 0 0 0-.522 5.805 31.247 31.247 0 0 0 .522 5.783 3.007 3.007 0 0 0 2.088 2.088c1.868.502 9.396.502 9.396.502s7.506 0 9.396-.502a3.007 3.007 0 0 0 2.088-2.088 31.247 31.247 0 0 0 .5-5.783 31.247 31.247 0 0 0-.5-5.805zM9.609 15.601V8.408l6.264 3.602z"/></svg>
-          </a>
-          <a href="mailto:biblebcc@gmail.com" aria-label="Email">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-          </a>
+          <a href={site.facebookUrl} target="_blank" aria-label="Facebook"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
+          <a href={site.youtubeMainUrl} target="_blank" aria-label="YouTube"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M23.495 6.205a3.007 3.007 0 0 0-2.088-2.088c-1.87-.501-9.396-.501-9.396-.501s-7.507-.01-9.396.501A3.007 3.007 0 0 0 .527 6.205a31.247 31.247 0 0 0-.522 5.805 31.247 31.247 0 0 0 .522 5.783 3.007 3.007 0 0 0 2.088 2.088c1.868.502 9.396.502 9.396.502s7.506 0 9.396-.502a3.007 3.007 0 0 0 2.088-2.088 31.247 31.247 0 0 0 .5-5.783 31.247 31.247 0 0 0-.5-5.805zM9.609 15.601V8.408l6.264 3.602z"/></svg></a>
+          <a href={`mailto:${site.email}`} aria-label="Email"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></a>
         </div>
       </div>
     </div>
   </footer>
 
-  <!-- ── JAVASCRIPT ─────────────────────────────────── -->
-  <script is:inline>
-
-    const sermons = [
-      {
-        title:    "Restoring the Foundation of Marriage",
-        speaker:  "Peter Milimo",
-        date:     "May 2025",
-        category: "Marriage Restoration",
-        duration: "52 min",
-        verse:    '"What God has joined together, let no one separate." — Mark 10:9',
-        excerpt:  "Marriage was designed by God to reflect His love. Peter Milimo unpacks the biblical keys to healing, reconciliation, and building a covenant home that thrives.",
-      },
-      {
-        title:    "Leading with Integrity: The Servant Leader",
-        speaker:  "Peter Milimo",
-        date:     "April 2025",
-        category: "Christian Leadership",
-        duration: "44 min",
-        verse:    '"Whoever wants to be great among you must be your servant." — Matthew 20:26',
-        excerpt:  "True leadership flows from humility and biblical wisdom. This teaching challenges and equips leaders in the church, family, and marketplace.",
-      },
-      {
-        title:    "Awakening a Generation to Purpose",
-        speaker:  "Peter Milimo",
-        date:     "March 2025",
-        category: "Youth Empowerment",
-        duration: "48 min",
-        verse:    '"Do not let anyone look down on you because you are young." — 1 Timothy 4:12',
-        excerpt:  "Young people are not the church of tomorrow — they are the church of today. Peter Milimo calls this generation to rise and walk boldly in their God-given calling.",
-      },
-    ];
-
-    const books = [
-      {
-        title:  "When One Becomes Both",
-        author: "Peter Milimo",
-        cat:    "Single Parenting & Family",
-        sub:    "How Single Parents Rise, Heal and Build Strong Families Against All Odds",
-        desc:   "A powerful, compassionate guide for single parents navigating the journey of raising a family alone — covering healing, resilience, identity, and building a home that thrives against every odd.",
-        price:  "KSh 1,200",
-        format: "Softcopy (PDF / eBook)",
-      },
-      {
-        title:  "The Thirteen Effective Pillars of a Covenant Marriage",
-        author: "Peter Milimo",
-        cat:    "Marriage & Family",
-        sub:    "A Biblical Guide for Building a Strong, Faithful & Divorce-Resistant Union",
-        desc:   "An in-depth biblical roadmap through thirteen essential pillars every covenant marriage must stand on — equipping couples to build a strong, faithful, and divorce-resistant union grounded in God's Word.",
-        price:  "KSh 1,200",
-        format: "Softcopy (PDF / eBook)",
-      },
-    ];
-
-    const resources = [
-      { title: "7 Pillars of a Godly Marriage",       tag: "Marriage",            desc: "A practical study guide covering the seven essential pillars that every Christian marriage must be built upon — from communication to covenant faithfulness.", pages: "24 pages", size: "1.2 MB", url: "#" },
-      { title: "The Leader's Devotional Journal",     tag: "Leadership",          desc: "A 21-day guided journal for Christian leaders — daily Scripture, reflections, and action points to sharpen your vision, character, and effectiveness.", pages: "48 pages", size: "2.1 MB", url: "#" },
-      { title: "Prayer Guide for Spiritual Revival",  tag: "Spiritual Awakening", desc: "A structured 14-day prayer guide designed to ignite personal and corporate revival — with targeted Scripture prayers for families, churches, and communities.", pages: "18 pages", size: "900 KB", url: "#" },
-      { title: "Youth Identity & Purpose Workbook",   tag: "Youth Empowerment",   desc: "An interactive workbook helping young people discover their God-given identity, gifts, and purpose — ideal for youth groups and personal study.", pages: "36 pages", size: "1.8 MB", url: "#" },
-      { title: "Healing After Divorce",               tag: "Marriage Restoration", desc: "A compassionate guide for those walking through separation or divorce — offering biblical comfort, practical steps toward healing, and hope for restoration.", pages: "22 pages", size: "1.0 MB", url: "#" },
-      { title: "Kingdom Finances: God's Principles",  tag: "Christian Living",    desc: "Discover God's principles for handling money with wisdom, integrity, and generosity — moving from financial struggle to stewardship and kingdom impact.", pages: "30 pages", size: "1.5 MB", url: "#" },
-    ];
-
-    function renderSermons() {
-      const el = document.getElementById('sermonsGrid');
-      if (!el) return;
-      const bgs = ['spb-1','spb-2','spb-3'];
-      el.innerHTML = sermons.map((s, i) => {
-        const bars = Array.from({length:24}, () => Math.floor(Math.random()*70+12));
-        return `
-        <div class="sermon-card reveal d${(i%3)+1}">
-          <div class="sermon-panel">
-            <div class="sermon-panel-bg ${bgs[i%3]}"></div>
-            <div class="sermon-cross">
-              <svg width="72" height="90" viewBox="0 0 72 90" fill="none">
-                <rect x="30" y="0" width="12" height="90" rx="4" fill="white"/>
-                <rect x="0" y="26" width="72" height="12" rx="4" fill="white"/>
-              </svg>
-            </div>
-            <div class="sermon-waves">${bars.map(h=>`<span style="height:${h}%"></span>`).join('')}</div>
-            <div class="sermon-tag">${s.category}</div>
-            <div class="sermon-verse">${s.verse}</div>
-          </div>
-          <div class="sermon-body">
-            <div>
-              <div class="sermon-date">${s.date}</div>
-              <div class="sermon-title">${s.title}</div>
-              <div class="sermon-speaker">${s.speaker}</div>
-              <p class="sermon-excerpt">${s.excerpt}</p>
-            </div>
-          </div>
-        </div>`;
-      }).join('');
-      observeReveals();
-    }
-
-    function renderBooks() {
-      const el = document.getElementById('booksGrid');
-      if (!el) return;
-      const bgs    = ['bcb-1','bcb-2'];
-      const spines = ['bs-1','bs-2'];
-      el.innerHTML = books.map((b, i) => `
-        <div class="book-card reveal d${i+1}">
-          <div class="book-cover">
-            <div class="book-cover-bg ${bgs[i]}"></div>
-            <div class="book-spine ${spines[i]}"></div>
-            <div class="book-orn-t"></div>
-            <div class="book-orn-b"></div>
-            <div class="book-cross">
-              <svg width="52" height="65" viewBox="0 0 52 65" fill="none">
-                <rect x="21" y="0" width="10" height="65" rx="3" fill="white"/>
-                <rect x="0" y="17" width="52" height="10" rx="3" fill="white"/>
-              </svg>
-            </div>
-            <div class="book-price-tag">${b.price}</div>
-            <div class="book-cover-text">
-              <div class="book-cat">${b.cat}</div>
-              <div class="book-cover-title">${b.title}</div>
-              <div class="book-cover-subtitle">${b.sub}</div>
-              <div class="book-cover-author">${b.author}</div>
-            </div>
-          </div>
-          <div class="book-body">
-            <div class="book-format-badge">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-              ${b.format}
-            </div>
-            <p class="book-desc">${b.desc}</p>
-            <div class="book-btns">
-              <a href="#donate" class="btn-book btn-book-gold" onclick="switchTabByName('mpesa')">Buy Softcopy</a>
-              <a href="mailto:biblebcc@gmail.com" class="btn-book btn-book-ghost">Email to Order</a>
-            </div>
-          </div>
-        </div>
-      `).join('');
-      observeReveals();
-    }
-
-    function renderResources() {
-      const el = document.getElementById('resourcesGrid');
-      if (!el) return;
-      const pdfSvg = `<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>`;
-      el.innerHTML = resources.map((r, i) => `
-        <div class="res-card reveal d${(i%3)+1}">
-          <div class="res-icon-wrap">${pdfSvg}</div>
-          <div class="res-tag">${r.tag}</div>
-          <div class="res-title">${r.title}</div>
-          <p class="res-desc">${r.desc}</p>
-          <div class="res-meta"><span>📄 ${r.pages}</span><span>💾 ${r.size}</span></div>
-        </div>
-      `).join('');
-      observeReveals();
-    }
-
-    function switchTab(id, btn) {
-      document.querySelectorAll('.pay-panel').forEach(p => p.classList.remove('active'));
-      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      document.getElementById('panel-' + id).classList.add('active');
-      if (btn) btn.classList.add('active');
-    }
-    function switchTabByName(id) {
-      const btn = document.querySelector(`.tab-btn[onclick*="${id}"]`);
-      if (btn) switchTab(id, btn);
-    }
-
-    /* NAV SCROLL */
-    const navbar = document.getElementById('navbar');
+  <script>
+    const navbar = document.getElementById('navbar')!;
     window.addEventListener('scroll', () => {
       navbar.classList.toggle('scrolled', window.scrollY > 60);
     });
 
-    /* MOBILE MENU */
-    var _menu  = document.getElementById('mobileMenu');
-    var _bd    = document.getElementById('mmBackdrop');
-    var _hbg   = document.getElementById('hamburger');
-    var _close = document.getElementById('mmClose');
-    var _nav   = document.getElementById('navbar');
+    const _menu  = document.getElementById('mobileMenu')!;
+    const _bd    = document.getElementById('mmBackdrop')!;
+    const _hbg   = document.getElementById('hamburger')!;
+    const _close = document.getElementById('mmClose')!;
 
     function closeMobileMenu() {
       _menu.classList.remove('open'); _bd.classList.remove('open');
-      _hbg.classList.remove('is-open'); _nav.classList.remove('menu-open');
+      _hbg.classList.remove('is-open'); navbar.classList.remove('menu-open');
       document.body.style.overflow = '';
     }
     function openMobileMenu() {
       _menu.classList.add('open'); _bd.classList.add('open');
-      _hbg.classList.add('is-open'); _nav.classList.add('menu-open');
+      _hbg.classList.add('is-open'); navbar.classList.add('menu-open');
       document.body.style.overflow = 'hidden';
     }
-    _hbg.addEventListener('click', function () {
-      _menu.classList.contains('open') ? closeMobileMenu() : openMobileMenu();
-    });
+    _hbg.addEventListener('click', () => _menu.classList.contains('open') ? closeMobileMenu() : openMobileMenu());
     _close.addEventListener('click', closeMobileMenu);
     _bd.addEventListener('click', closeMobileMenu);
-    document.querySelectorAll('.mm-nav a').forEach(function (a) {
-      a.addEventListener('click', closeMobileMenu);
-    });
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape') closeMobileMenu();
-    });
+    document.querySelectorAll('.mm-nav a').forEach(a => a.addEventListener('click', closeMobileMenu));
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMobileMenu(); });
 
-    /* SCROLL REVEAL */
     const revealObs = new IntersectionObserver(entries => {
       entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
     }, { threshold: 0.1 });
+    document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
 
-    function observeReveals() {
-      document.querySelectorAll('.reveal:not([data-obs])').forEach(el => {
-        el.setAttribute('data-obs', '1');
-        revealObs.observe(el);
-      });
-    }
-
-    renderSermons();
-    renderBooks();
-    renderResources();
-    observeReveals();
-
+    (window as any).switchTab = function(id: string, btn: HTMLElement) {
+      document.querySelectorAll('.pay-panel').forEach((p: Element) => p.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach((b: Element) => b.classList.remove('active'));
+      document.getElementById('panel-' + id)!.classList.add('active');
+      if (btn) btn.classList.add('active');
+    };
   </script>
 </body>
 </html>

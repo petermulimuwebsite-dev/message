@@ -1,0 +1,45 @@
+{
+  "$ref": "#/definitions/resources",
+  "definitions": {
+    "resources": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "tag": {
+          "type": "string"
+        },
+        "desc": {
+          "type": "string"
+        },
+        "pages": {
+          "type": "string"
+        },
+        "size": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        },
+        "order": {
+          "type": "number",
+          "default": 0
+        },
+        "$schema": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "title",
+        "tag",
+        "desc",
+        "pages",
+        "size",
+        "url"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}

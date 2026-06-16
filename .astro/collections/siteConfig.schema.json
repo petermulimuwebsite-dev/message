@@ -1,0 +1,85 @@
+{
+  "$ref": "#/definitions/siteConfig",
+  "definitions": {
+    "siteConfig": {
+      "type": "object",
+      "properties": {
+        "heroTitle": {
+          "type": "string"
+        },
+        "heroSubtitle": {
+          "type": "string"
+        },
+        "heroVerse": {
+          "type": "string"
+        },
+        "heroRef": {
+          "type": "string"
+        },
+        "ministryIntro": {
+          "type": "string"
+        },
+        "ministryBody": {
+          "type": "string"
+        },
+        "statYears": {
+          "type": "string"
+        },
+        "statFamilies": {
+          "type": "string"
+        },
+        "statPillars": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "facebookUrl": {
+          "type": "string"
+        },
+        "youtubeMainUrl": {
+          "type": "string"
+        },
+        "paybillNumber": {
+          "type": "string"
+        },
+        "accountNumber": {
+          "type": "string"
+        },
+        "accountName": {
+          "type": "string"
+        },
+        "bookPrice": {
+          "type": "string"
+        },
+        "paypalEmail": {
+          "type": "string"
+        },
+        "$schema": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "heroTitle",
+        "heroSubtitle",
+        "heroVerse",
+        "heroRef",
+        "ministryIntro",
+        "ministryBody",
+        "statYears",
+        "statFamilies",
+        "statPillars",
+        "email",
+        "facebookUrl",
+        "youtubeMainUrl",
+        "paybillNumber",
+        "accountNumber",
+        "accountName",
+        "bookPrice",
+        "paypalEmail"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}

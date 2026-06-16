@@ -1,0 +1,49 @@
+{
+  "$ref": "#/definitions/books",
+  "definitions": {
+    "books": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "author": {
+          "type": "string"
+        },
+        "cat": {
+          "type": "string"
+        },
+        "sub": {
+          "type": "string"
+        },
+        "desc": {
+          "type": "string"
+        },
+        "price": {
+          "type": "string"
+        },
+        "format": {
+          "type": "string"
+        },
+        "order": {
+          "type": "number",
+          "default": 0
+        },
+        "$schema": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "title",
+        "author",
+        "cat",
+        "sub",
+        "desc",
+        "price",
+        "format"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
