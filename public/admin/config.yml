@@ -93,7 +93,9 @@ collections:
     extension: json
     format: json
     fields:
-      - { label: Title, name: title, widget: string }
+      - label: Title
+        name: title
+        widget: string
       - label: Tag / Category
         name: tag
         widget: select
@@ -104,8 +106,20 @@ collections:
           - Spiritual Awakening
           - Youth Empowerment
           - Christian Living
-      - { label: Description, name: desc, widget: text }
-      - { label: "Pages (e.g. 24 pages)", name: pages, widget: string }
-      - { label: "File Size (e.g. 1.2 MB)", name: size, widget: string }
-      - { label: Download URL (use # if not ready), name: url, widget: string, default: "#" }
-      - { label: Display Order, name: order, widget: number, default: 1 }
+      - label: Description
+        name: desc
+        widget: text
+      - label: "Pages (e.g. 24 pages)"
+        name: pages
+        widget: string
+      - label: "File Size (e.g. 1.2 MB)"
+        name: size
+        widget: string
+      - label: Download URL (use # if not ready)
+        name: url
+        widget: string
+        default: "#"
+      - label: Display Order
+        name: order
+        widget: number
+        default: 1
