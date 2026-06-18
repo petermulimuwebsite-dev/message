@@ -2,7 +2,9 @@ backend:
   name: github
   repo: petermulimuwebsite-dev/message
   branch: main
-  base_url: https://sveltia-cms-auth.pages.dev
+  base_url: https://www.petermilimo.org
+  auth_endpoint: /api/auth
+
 
 
 media_folder: public/images
